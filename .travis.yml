@@ -35,5 +35,5 @@ script:
   - golint -set_exit_status $(go list ./...)
 
 after_success:
-  - gox ./...
+  - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" ./...
   - ghr --username iggy --replace pre-release dist/

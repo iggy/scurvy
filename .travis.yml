@@ -1,0 +1,36 @@
+language: go
+
+go:
+  - 1.10
+  - master
+
+matrix:
+  allow_failures:
+    - go: master
+
+
+notifications:
+
+
+
+before_script:
+  - GO_FILES=$(find . -iname '*.go' -type f)
+  - go get github.com/golang/lint/golint
+  - go get honnef.co/go/tools/cmd/megacheck
+  - go get github.com/fzipp/gocyclo
+
+before_install:
+  # - go get github.com/mitchellh/gox
+  - go get github.com/tcnksm/ghr
+
+script:
+  - test -z $(gofmt -s -l $GO_FILES)
+  - go test -v -race ./...
+  - go vet ./...
+  - megacheck ./...
+  - gocyclo -over 19 $GO_FILES
+  - golint -set_exit_status $(go list ./...)
+
+after_success:
+  - gox ./...
+  - ghr --username iggy --replace pre-release dist/

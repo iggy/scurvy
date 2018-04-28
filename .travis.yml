@@ -1,15 +1,18 @@
 language: go
 
 go:
-  - 1.10
+  # build version target
+  - 1.10.x
+  # test against master to see any future breakages
   - master
 
 matrix:
   allow_failures:
+    # we build, but we don't particularly care if it fails
     - go: master
 
 
-notifications:
+# notifications:
 
 
 

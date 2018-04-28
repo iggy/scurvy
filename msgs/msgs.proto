@@ -1,0 +1,7 @@
+syntax = "proto3";
+package msgs;
+
+message Client {
+  string name = 1;
+  string path = 2;
+}

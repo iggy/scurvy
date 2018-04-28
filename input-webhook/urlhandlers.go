@@ -10,7 +10,7 @@ import (
 
 	"net/http"
 
-	"scurvy/msgs"
+	"github.com/iggy/scurvy/msgs"
 )
 
 // handle notifications from CouchPotato

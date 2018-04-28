@@ -6,7 +6,7 @@ import (
 
 	"net/http"
 
-	"scurvy/config"
+	"github.com/iggy/scurvy/config"
 
 	"github.com/spf13/viper"
 )

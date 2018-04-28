@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"scurvy/config"
+	"github.com/iggy/scurvy/config"
 
 	"github.com/nats-io/go-nats"
 	// "github.com/spf13/cobra"

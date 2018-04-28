@@ -23,7 +23,7 @@ before_script:
   - go get github.com/fzipp/gocyclo
 
 before_install:
-  # - go get github.com/mitchellh/gox
+  - go get github.com/mitchellh/gox
   - go get github.com/tcnksm/ghr
 
 script:

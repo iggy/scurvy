@@ -34,8 +34,8 @@ func SendNatsMsg(Subject string, Msg NatsMsg) {
 
 	nc, err := nats.Connect(connectString,
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	defer nc.Close()
 	checkErr(err)
+	defer nc.Close()
 	// c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	// checkErr(err)
 
@@ -64,8 +64,8 @@ func SendNatsPing(Who string) {
 
 	nc, err := nats.Connect(connectString,
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	defer nc.Close()
 	checkErr(err)
+	defer nc.Close()
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	checkErr(err)
 

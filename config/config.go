@@ -17,4 +17,25 @@ func ReadConfig() {
 	if err != nil { // Handle errors reading the config file
 		panic(fmt.Errorf("fatal error config file: %s", err))
 	}
+
+	// build the slack webhook address here and shove it back into viper for safe keeping
+	viper.Set("webhook_address",
+		fmt.Sprintf("https://hooks.slack.com/services/%s", viper.GetString("slack.webhook_key")))
+}
+
+// GetNatsConnString helper to assemble the NATS connect string and return it
+func GetNatsConnString() string {
+	ReadConfig()
+
+	scheme := "nats"
+	if viper.GetBool("mq.tls") {
+		scheme = "tls"
+	}
+
+	connectString := fmt.Sprintf("%s://%s:%s",
+		scheme,
+		viper.GetString("mq.host"),
+		viper.GetString("mq.port"))
+
+	return connectString
 }

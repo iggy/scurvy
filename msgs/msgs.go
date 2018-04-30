@@ -1,7 +1,6 @@
 package msgs
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/iggy/scurvy/config"
@@ -22,17 +21,7 @@ const ReportFilesSubject = "scurvy.notify.reportfiles"
 func SendNatsMsg(Subject string, Msg NatsMsg) {
 	config.ReadConfig()
 
-	scheme := "nats"
-	if viper.GetBool("mq.tls") {
-		scheme = "tls"
-	}
-
-	connectString := fmt.Sprintf("%s://%s:%s",
-		scheme,
-		viper.GetString("mq.host"),
-		viper.GetString("mq.port"))
-
-	nc, err := nats.Connect(connectString,
+	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
 	checkErr(err)
 	defer nc.Close()
@@ -52,17 +41,7 @@ func SendNatsMsg(Subject string, Msg NatsMsg) {
 func SendNatsPing(Who string) {
 	config.ReadConfig()
 
-	scheme := "nats"
-	if viper.GetBool("mq.tls") {
-		scheme = "tls"
-	}
-
-	connectString := fmt.Sprintf("%s://%s:%s",
-		scheme,
-		viper.GetString("mq.host"),
-		viper.GetString("mq.port"))
-
-	nc, err := nats.Connect(connectString,
+	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
 	checkErr(err)
 	defer nc.Close()

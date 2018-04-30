@@ -3,6 +3,7 @@ package main
 import (
 	// "bytes"
 	"fmt"
+	"log"
 	"os"
 	"os/exec"
 	"runtime"
@@ -20,41 +21,29 @@ import (
 )
 
 func printMsg(m *nats.Msg, i int) {
-	fmt.Printf("[#%d] Received on [%s]: '%s'\n", i, m.Subject, string(m.Data))
+	log.Printf("[#%d] Received on [%s]: '%s'\n", i, m.Subject, string(m.Data))
 	var jmsg = msgs.NewDownload{}
 	if jerr := json.Unmarshal(m.Data, &jmsg); jerr != nil {
-		panic(fmt.Errorf("fatal error reading json msg from nats: %s", jerr))
+		log.Panicf("fatal error reading json msg from nats: %s", jerr)
 	}
 	if m.Subject == "scurvy.notify.newdownload" {
 		syncCmd := viper.GetString("syncd.newdownload.script")
-		fmt.Printf("%s\n", jmsg.Name)
-		fmt.Printf("Running sync command: %s\n", syncCmd)
+		log.Printf("%s\n", jmsg.Name)
+		log.Printf("Running sync command: %s\n", syncCmd)
 		cmd := exec.Command(syncCmd)
 		err := cmd.Run()
-		fmt.Printf("Command error code: %x\n", err)
+		if err != nil {
+			log.Printf("Command error code: %v\n", err)
+		}
 	}
 	if m.Subject == "scurvy.notify.reportfiles" {
-		fmt.Printf("Reporting current files to master\n")
+		log.Printf("Reporting current files to master\n")
 	}
-	// fmt.Printf("%s - %v - %v", m.Subject, m.Reply, m.Sub)
+	// log.Printf("%s - %v - %v", m.Subject, m.Reply, m.Sub)
 }
 
 func main() {
 	config.ReadConfig()
-
-	// build the slack webhook address here and shove it back into viper for safe keeping
-	viper.Set("webhook_address",
-		fmt.Sprintf("https://hooks.slack.com/services/%s", viper.GetString("slack.webhook_key")))
-
-	scheme := "nats"
-	if viper.GetBool("mq.tls") {
-		scheme = "tls"
-	}
-
-	connectString := fmt.Sprintf("%s://%s:%s",
-		scheme,
-		viper.GetString("mq.host"),
-		viper.GetString("mq.port"))
 
 	hostname, _ := os.Hostname()
 
@@ -64,25 +53,25 @@ func main() {
 	go func() {
 		for range ticker.C {
 
-			// fmt.Printf("Pinging nats with hostname: %s (%s)\n", hostname, t)
+			// log.Printf("Pinging nats with hostname: %s (%s)\n", hostname, t)
 
 			msgs.SendNatsPing(hostname)
 		}
 	}()
 
-	nc, err := nats.Connect(connectString,
+	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(
 			viper.GetString("mq.user"),
 			viper.GetString("mq.password"),
 		),
 		nats.DisconnectHandler(func(nc *nats.Conn) {
-			fmt.Printf("Got disconnected!\n")
+			log.Printf("Got disconnected!\n")
 		}),
 		nats.ReconnectHandler(func(nc *nats.Conn) {
-			fmt.Printf("Got reconnected to %v!\n", nc.ConnectedUrl())
+			log.Printf("Got reconnected to %v!\n", nc.ConnectedUrl())
 		}),
 		nats.ClosedHandler(func(nc *nats.Conn) {
-			fmt.Printf("Connection closed. Reason: %q\n", nc.LastError())
+			log.Printf("Connection closed. Reason: %q\n", nc.LastError())
 		}),
 	)
 	checkErr(err)

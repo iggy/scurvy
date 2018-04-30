@@ -33,21 +33,7 @@ func main() {
 
 	config.ReadConfig()
 
-	// build the slack webhook address here and shove it back into viper for safe keeping
-	viper.Set("webhook_address",
-		fmt.Sprintf("https://hooks.slack.com/services/%s", viper.GetString("slack.webhook_key")))
-
-	scheme := "nats"
-	if viper.GetBool("mq.tls") {
-		scheme = "tls"
-	}
-
-	connectString := fmt.Sprintf("%s://%s:%s",
-		scheme,
-		viper.GetString("mq.host"),
-		viper.GetString("mq.port"))
-
-	nc, err := nats.Connect(connectString,
+	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
 	checkErr(err)
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)

@@ -71,7 +71,7 @@ func main() {
 			if cmd[0] == ':' {
 				switch idx := strings.Index(cmd, " "); {
 				case cmd[1] == 'd':
-					fmt.Printf(c.String())
+					fmt.Print(c.String())
 				case cmd[1] == 'n':
 					parts := strings.Split(cmd, " ")
 					username := strings.TrimSpace(parts[1])
@@ -83,14 +83,14 @@ func main() {
 					continue
 				case cmd[1] == 'q':
 					reallyquit = true
-					c.Quit(cmd[idx+1 : len(cmd)])
+					c.Quit(cmd[idx+1:])
 				case cmd[1] == 's':
 					reallyquit = true
 					c.Close()
 				case cmd[1] == 'j':
-					c.Join(cmd[idx+1 : len(cmd)])
+					c.Join(cmd[idx+1:])
 				case cmd[1] == 'p':
-					c.Part(cmd[idx+1 : len(cmd)])
+					c.Part(cmd[idx+1:])
 				}
 			} else {
 				c.Raw(cmd)

@@ -15,3 +15,6 @@
 
 # skip build output dir
 dist/
+
+# skip some local files
+scurvy.db

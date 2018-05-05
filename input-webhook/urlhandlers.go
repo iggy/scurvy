@@ -45,8 +45,12 @@ func sabnzbdHandler(w http.ResponseWriter, r *http.Request) {
 		jreq.Message, jreq.Title, jreq.Type, jreq.Version)
 
 	if jreq.Title == "SABnzbd: Job finished" {
-		nd := msgs.NewDownload{Name: jreq.Message, Path: "/scurvy"} // TODO find actualy path
+		nd := msgs.NewDownload{Name: jreq.Message, Path: "/scurvy"} // TODO find actual path
 		msgs.SendNatsMsg("scurvy.notify.newdownload", nd)
+	}
+	if jreq.Title == "SABnzbd: Job failed" {
+		fd := msgs.FailedDownload{Name: jreq.Message, Path: "/scurvy"} // TODO find actual path}
+		msgs.SendNatsMsg("scurvy.notify.faileddownload", fd)
 	}
 
 }

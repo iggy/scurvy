@@ -25,6 +25,10 @@ func printMsg(m *nats.Msg, i int) {
 		notify.SendGeneralSlack(fmt.Sprintf("Good news everyone! %s was downloaded to %s",
 			jmsg.Name, jmsg.Path))
 	}
+	if m.Subject == "scurvy.notify.faileddownload" {
+		notify.SendGeneralSlack(fmt.Sprintf("Bad news everyone! %s failed to downloaded to %s",
+			jmsg.Name, jmsg.Path))
+	}
 	// fmt.Printf("%s - %v - %v", m.Subject, m.Reply, m.Sub)
 }
 

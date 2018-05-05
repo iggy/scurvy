@@ -20,6 +20,17 @@ func (s NewDownload) serialize() []byte {
 	return b
 }
 
+// FailedDownload - struct for Marshal'ing new download messages
+type FailedDownload struct {
+	Name string
+	Path string
+}
+
+func (s FailedDownload) serialize() []byte {
+	b, _ := json.Marshal(s)
+	return b
+}
+
 // ReportFiles = struct for Marshal'ing the report files messages
 type ReportFiles struct {
 	Full    bool

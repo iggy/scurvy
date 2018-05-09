@@ -27,6 +27,7 @@ before_install:
   - go get github.com/tcnksm/ghr
 
 script:
+  - echo "TRAVIS_GO_VERSION=${TRAVIS_GO_VERSION}"
   - test -z $(gofmt -s -l $GO_FILES)
   - go test -v -race ./...
   - go vet ./...
@@ -36,4 +37,4 @@ script:
 
 after_success:
   - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" ./...
-  - [ $TRAVIS_GO_VERSION == 1.10* ] && ghr --username iggy --replace $(date +%Y%d%m%H%M) dist/
+  - if [[ "$TRAVIS_GO_VERSION" = 1.10* ]]; then ghr --username iggy --replace $(date +%Y%d%m%H%M) dist/ ; fi

@@ -11,6 +11,8 @@ matrix:
     # we build, but we don't particularly care if it fails
     - go: master
 
+# don't build tags
+if: branch = master
 
 # notifications:
 

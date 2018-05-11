@@ -52,7 +52,7 @@ deploy:
   # only deploy if we are on master branch and not using go tip
   on:
     branch: master
-    condition: $TRAVIS_GO_VERSION ~= 1.10.*
+    condition: [ $TRAVIS_GO_VERSION =~ 1.10.* ]
 
 after_deploy:
   - docker login -u $DOCKER_USER -p $DOCKER_PASS

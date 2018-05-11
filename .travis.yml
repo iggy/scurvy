@@ -11,24 +11,24 @@ matrix:
     # we build, but we don't particularly care if it fails
     - go: master
 
-# don't build tags
-if: branch = master
+notifications:
+  slack:
+    secure: "HQmH10dvfHzfxWc1XZcia81jP0wCK9aOKLiBMrZA0tiLXxT1Q/3zU00CgO3f4M4wZltbmafOjodO2xMUvZpA8PmoCORR0R0KJaTNJxQRspi0P5IYnbUi875EJQron7SCAWwXR3K4xgozZTfgJGPjS9C6SAa5aRhxkSGRNNw6yHopVuwuAdNtU54SIqfrx9eMBiMd9vb2Y59xiDSnuYiRhC4ZgmxW0tturpWXYZp6LmnID9yGSMi1MXyCMbLMhx067MuPzY3PMwCoHinWedanddMYWxUnzEJLwXlOKoQ9AU8wYth8raryTviWbD/lnA39KoPfcwrZoBKfIWOzm+qUiQ7rglOUpUdtE96Z8VxJkbQMgCW9QqmupxFFiG/3tX5nvqCX7/pmP3m1mTf9AvU23fIuCZPGr/sz2nv8fFYoXLVkDujJG1gcTezhwBpNITDSIEYifSQPr3InUpMCVouQ4QLN+EcDpV3wXcUFxacXoCkZ+tdthMPUllMl2gJpf3NmsWvxK8rtR9RRxwC2/eP/tjnx7fQedWY4eV/Mr8HyxcGzzXv8wsDa14B12uSQ0Gdb6mVqPFgM2mtP/Sc+I7jHuGkwI1jJ9yWFJEDMEL1ESed6wXl7emWo1oMdNNJu+1lR6ca/Y1eZCSwZEpREyioKffsNGZEdPdBFRuC5Q2QWkxw="
 
-# notifications:
-
-
+stages:
+  - name: after_deploy
+    if: env(TRAVIS_GO_VERSION) ~= 1.10.*
 
 before_script:
   - GO_FILES=$(find . -iname '*.go' -type f)
   - go get github.com/golang/lint/golint
   - go get honnef.co/go/tools/cmd/megacheck
   - go get github.com/fzipp/gocyclo
-
-before_install:
   - go get github.com/mitchellh/gox
-  - go get github.com/tcnksm/ghr
+  # - go get github.com/tcnksm/ghr
 
 script:
+  # bunch of tests
   - echo "TRAVIS_GO_VERSION=${TRAVIS_GO_VERSION}"
   - test -z $(gofmt -s -l $GO_FILES)
   - go test -v -race ./...
@@ -38,5 +38,29 @@ script:
   - golint -set_exit_status $(go list ./...)
 
 after_success:
+  # the actual build
   - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" ./...
-  - if [[ "$TRAVIS_GO_VERSION" = 1.10* ]]; then ghr --username iggy --replace $(date +%Y%d%m%H%M) dist/ ; fi
+
+deploy:
+  # deployment-y stuff... we only do this if
+  # - if [[ "$TRAVIS_GO_VERSION" = 1.10* ]]; then ghr --username iggy --replace $(date +%Y%d%m%H%M) dist/ ; fi
+  provider: releases
+  api_key: $GITHUB_TOKEN
+  file_glob: true
+  file: dist/*
+  skip_cleanup: true
+  # only deploy if we are on master branch and not using go tip
+  on:
+    branch: master
+    condition: $TRAVIS_GO_VERSION ~= 1.10.*
+
+after_deploy:
+  - docker login -u $DOCKER_USER -p $DOCKER_PASS
+  - for dir in input-webhook ; do cd $dir ; docker build -t notiggy/scuvry-$dir . ; docker push notiggy/scurvy-$dir ; done
+
+DOCKER_EMAIL:
+  secure: do+jtJdRAK35D7x9JxE1AfSd2WbzZpUH2dYzL7jlsQ9pNgt7XMkoJafGX/bFApZCD8c3xfVc6QSzWVYcR/BjHpXbhUf6LM+P7SyCACzUnumZAUw2xT39XuVrruplIGlWGCg3uTb6XI9+yTZIVpVuiItGlQfs7Hl+hb1BcA5OI8QGoSF3UEZ5ziVTgCOJLb0bXl6cjExXSOoZXmSSQdN9Q0fkjvu1/9S1N+gUIBfHWpugtpWs9g37Rdf0K/APn1UY6X4NmDwGh2+F/kb3z9Ytj9eMHqi9ytDy1lW30OAVQMlR1PKGtno7mgFbjSLEThSwTtujTQNB0UOkMhDKHjCfYcK8Uko3MgwtQabRytvheTeL8/mCDoAp+erpGKPEZkGEs0SNZHo4xyO8or+uY2De3ZsKh32AfPuu5VIC7NG9J+N5nanVba/+DJ7pGr60PB5vxaboPTbloM/mZ3utLXMDV10lTGcMEpct3iDahEkLG+aP1zgQGlYYHO74OsMwNvY7dMfVtT4pR9EagQFfd9cTAv8BpLw9Nynktqqc3vkiTCKkCefKmcxRUunnuTc3hPVG7c3ZFeOrXi0hfcQh3nYlohazS8r7it7cp2AM1FfFIC3kZAYTiwzj91qXKoQZPoHjVrNWYexn2nUJb7SnDKYb3thMyMWi3ShFuedRd13ankg=
+DOCKER_USER:
+  secure: Nf9DxQ4kVAk9k5lpOz8fesT1FHPhabPnoQd/iWDcUw1/g/x/U9Z4iX+Qpy28VOBo5CLEqCm/9descmaaK+H5pSySpr4VHiD7w4y8XvYa1oqQGrnsuElPVBem+kV33uziAyefjQIdHHXPGVsL2ii68KjEuDtiJ9Sfmz+ZR7tdgMJQz+FIuGcZXNZD/z/UQZU8ltufOSKjX5oRoGkOV3yb7qJNFvROpLdbozUV7u1iSEVAmR+OYP+soUHOq1axYjcbgoOzOxPrn4Bvx39VWHTU2UaJtWBVz3102CtpEKSpAAQPC1e4QaACnr92JDvK/aDtgqm/te/5jDu6nR+0r4VMjGGIRwG6PIiNrD4f8/VoP58vOWmb9yEoKX3J3sb+YEJ0hrlshLsFrdMavzmQvRaAjlJbSBjIFltfgi+SbZ/8GoGHjM4twIF4VNhtGHTAOvTjIaC7YLWIVNarrj8ujR4c38BjCaq7/uNbeASni9v0YJXjqyWKVyPEoa7OdaiBGbH+znAzbI55gCRFdZP5VsdwSGyV0uODr2SOmV31Db/luMvbVA319DHk2PoPltK66T+ElYajafXrd/NkH5fAfijUCcwDf2ULMDCHREEg03JVIcBKhR1X1BF8Y8zSeCN5KallxQX0zEOmBIn/wI+JeUOPK5QCnDNhN/JEQKqfGAXP/pM=
+DOCKER_PASS:
+  secure: K/KsbpERTKnv1rfgzrzDZez5Kj3yZ/uSgdSZUGO1o5yLK8thDXG8PDzHmVnBaTZv5h1fr2nT+2ZLurbZjVMGgQ1J/qjIV6nSfZBEUYVSUTyrqPi2QME1bAnNFP9/dO4nHtnCpQ0pBgbr6rYwkr92XU46jaWzVwxEUrK1iadDBee/M1F8aF6lQA7bCfLE4chHC1Ymb9hu1YMg+bUsQPKP3AfZ0CiASoDrfarMXeZ2/5uBmpK19M2of3ykds8qIcOOQZznWmLxFlM6SjJbUCkg7H9zs4orJeN5MhEh/7o3RB4OX4TzuRTU7u9yntSs0oTDGLrSqjDwQ57EHlFqgxBC+lAVtc8v2xws1TTqTfNvHQxqTRUQYR68Si6eGmpYlHkDNehw+ktwa1mP73AnpqUlfae8mFqTgv3E8tcwS8XmAdkvo8ZZe14YKeequlfC4GzPXhuYV0xipqVq0uJfoT/pdtnk3D5+yno07crwZn77iDsjUmU1zDJyzoACkxnC1CWoPZzlKKIO/2bOi52TGxw2lkyDb2Rd8Ip1MPLhwqIVtna276e6hE/CXRVjjD6oZm4jyvL4b6p19JZGJ8M3vnGCEsd7saJ2Yy9lWJPzpL2EIbNQT24XPM/5yF56URHWOcUib8lSdcWCWhVESqFAlzVFPzS+jIh/NyiCBV3c5oZflHk=

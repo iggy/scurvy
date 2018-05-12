@@ -62,7 +62,7 @@ deploy:
 
 after_deploy:
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - for dir in input-webhook ; do cd $dir ; docker build -t notiggy/scurvy-$dir . ; docker push notiggy/scurvy-$dir ; done
+  - for dir in input-webhook ; do cd $TRAVIS_BUILD_DIR/$dir ; ls ; docker build -t notiggy/scurvy-$dir . ; docker push notiggy/scurvy-$dir ; done
 
 env:
   global:

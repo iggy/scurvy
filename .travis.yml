@@ -49,7 +49,7 @@ script:
 after_success:
   - ghr --username iggy --replace $DATETIME dist/
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - for dir in input-webhook ; do cd $TRAVIS_BUILD_DIR/$dir ; ls ; docker build -t notiggy/scurvy-$dir . ; docker push notiggy/scurvy-$dir ; done
+  - for dir in input-webhook ; do docker build -t notiggy/scurvy-$dir -f $dir/Dockerfile . ; docker push notiggy/scurvy-$dir ; done
 
 env:
   global:

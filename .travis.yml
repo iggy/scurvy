@@ -26,7 +26,8 @@ stages:
     if: env(TRAVIS_GO_VERSION) ~= 1.10.*
 
 before_script:
-  - GO_FILES=$(find . -iname '*.go' -type f)
+  - export GO_FILES=$(find . -iname '*.go' -type f)
+  - export DATETIME=$(date +%Y%d%m%H%M)
   - go get github.com/golang/lint/golint
   - go get honnef.co/go/tools/cmd/megacheck
   - go get github.com/fzipp/gocyclo
@@ -48,19 +49,20 @@ after_success:
   - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" ./...
 
 deploy:
-  # deployment-y stuff... we only do this if
-  # - if [[ "$TRAVIS_GO_VERSION" = 1.10* ]]; then ghr --username iggy --replace $(date +%Y%d%m%H%M) dist/ ; fi
-  provider: releases
-  api_key: $GITHUB_TOKEN
-  file_glob: true
-  file: dist/*
-  skip_cleanup: true
-  # only deploy if we are on master branch and not using go tip
-  on:
-    branch: master
-    condition: [ $TRAVIS_GO_VERSION =~ 1.10.* ]
+  # # deployment-y stuff... we only do this if
+  # # - if [[ "$TRAVIS_GO_VERSION" = 1.10* ]]; then ghr --username iggy --replace $(date +%Y%d%m%H%M) dist/ ; fi
+  # provider: releases
+  # api_key: $GITHUB_TOKEN
+  # file_glob: true
+  # file: dist/*
+  # skip_cleanup: true
+  # # only deploy if we are on master branch and not using go tip
+  # on:
+  #   branch: master
+  #   condition: [ $TRAVIS_GO_VERSION =~ 1.10.* ]
 
 after_deploy:
+  - ghr --username iggy --replace $DATETIME dist/
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
   - for dir in input-webhook ; do cd $TRAVIS_BUILD_DIR/$dir ; ls ; docker build -t notiggy/scurvy-$dir . ; docker push notiggy/scurvy-$dir ; done
 

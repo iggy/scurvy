@@ -28,11 +28,14 @@ stages:
 before_script:
   - export GO_FILES=$(find . -iname '*.go' -type f)
   - export DATETIME=$(date +%Y%d%m%H%M)
+
   - go get github.com/golang/lint/golint
   - go get honnef.co/go/tools/cmd/megacheck
   - go get github.com/fzipp/gocyclo
   - go get github.com/mitchellh/gox
   - go get github.com/tcnksm/ghr
+
+  - mkdir dist/etc
 
 script:
   # bunch of tests

@@ -32,7 +32,7 @@ before_script:
   - go get honnef.co/go/tools/cmd/megacheck
   - go get github.com/fzipp/gocyclo
   - go get github.com/mitchellh/gox
-  # - go get github.com/tcnksm/ghr
+  - go get github.com/tcnksm/ghr
 
 script:
   # bunch of tests

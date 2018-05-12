@@ -9,3 +9,5 @@ RUN mkdir /etc
 EXPOSE 38475
 
 ENTRYPOINT ["/input-webhook"]
+
+CMD []

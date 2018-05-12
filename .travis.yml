@@ -35,8 +35,6 @@ before_script:
   - go get github.com/mitchellh/gox
   - go get github.com/tcnksm/ghr
 
-  - mkdir $TRAVIS_BUILD_DIR/dist/etc
-
 script:
   # bunch of tests
   - echo "TRAVIS_GO_VERSION=${TRAVIS_GO_VERSION}"
@@ -48,6 +46,8 @@ script:
   - golint -set_exit_status $(go list ./...)
   # the actual build
   - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" ./...
+
+  - mkdir -p $TRAVIS_BUILD_DIR/dist/etc
 
 after_success:
   # do the github release

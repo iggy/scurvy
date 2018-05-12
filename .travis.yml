@@ -47,7 +47,9 @@ script:
   - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" ./...
 
 after_success:
+  # do the github release
   - ghr --username iggy --replace $DATETIME dist/
+  # do the docker hub release
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
   - for dir in input-webhook ; do docker build -t notiggy/scurvy-$dir -f $dir/Dockerfile . ; docker push notiggy/scurvy-$dir ; done
 

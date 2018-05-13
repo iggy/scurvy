@@ -27,7 +27,7 @@ stages:
 
 before_script:
   - export GO_FILES=$(find . -iname '*.go' -type f)
-  - export DATETIME=$(date +%Y%d%m%H%M)
+  - export DATETIME=$(date +%Y%m%d%H%M)
 
   - go get github.com/golang/lint/golint
   - go get honnef.co/go/tools/cmd/megacheck

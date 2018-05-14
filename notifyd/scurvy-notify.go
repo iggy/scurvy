@@ -7,6 +7,7 @@ import (
 
 	"encoding/json"
 
+	"github.com/iggy/scurvy/common"
 	"github.com/iggy/scurvy/config"
 	"github.com/iggy/scurvy/msgs"
 	"github.com/iggy/scurvy/notify"
@@ -40,9 +41,9 @@ func main() {
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	checkErr(err)
+	common.CheckErr(err)
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	checkErr(err)
+	common.CheckErr(err)
 
 	subj, i := "scurvy.notify.*", 0
 	c.Subscribe(subj, func(msg *nats.Msg) {
@@ -52,14 +53,8 @@ func main() {
 	c.Flush()
 
 	lerr := nc.LastError()
-	checkErr(lerr)
+	common.CheckErr(lerr)
 	// sendAdminSlack("Initializing Scurvy Notification Daemon.")
 
 	runtime.Goexit()
-}
-
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

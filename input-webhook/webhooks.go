@@ -30,9 +30,3 @@ func main() {
 
 	log.Fatal(http.ListenAndServe(bindString, router))
 }
-
-func checkErr(err error) {
-	if err != nil {
-		log.Panicln(err)
-	}
-}

@@ -11,6 +11,7 @@ import (
 
 	"encoding/json"
 
+	"github.com/iggy/scurvy/common"
 	"github.com/iggy/scurvy/config"
 	"github.com/iggy/scurvy/msgs"
 	"github.com/iggy/scurvy/notify"
@@ -74,9 +75,9 @@ func main() {
 			log.Printf("Connection closed. Reason: %q\n", nc.LastError())
 		}),
 	)
-	checkErr(err)
+	common.CheckErr(err)
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	checkErr(err)
+	common.CheckErr(err)
 
 	subj, i := "scurvy.notify.newdownload", 0
 	c.Subscribe(subj, func(msg *nats.Msg) {
@@ -86,16 +87,10 @@ func main() {
 	c.Flush()
 
 	lerr := nc.LastError()
-	checkErr(lerr)
+	common.CheckErr(lerr)
 
 	msg := fmt.Sprintf("Initializing Scurvy Sync Daemon on host: %s.", hostname)
 	notify.SendAdminSlack(msg)
 
 	runtime.Goexit()
-}
-
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

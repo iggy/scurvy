@@ -12,6 +12,7 @@ import (
 
 	irc "github.com/fluffle/goirc/client"
 	"github.com/fluffle/goirc/logging/glog"
+	"github.com/iggy/scurvy/common"
 	"github.com/iggy/scurvy/config"
 	"github.com/iggy/scurvy/msgs"
 	"github.com/nats-io/go-nats"
@@ -103,9 +104,9 @@ func main() {
 	// setup NATS queue watcher to send IRC message on new download
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	checkErr(err)
+	common.CheckErr(err)
 	natschan, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	checkErr(err)
+	common.CheckErr(err)
 
 	subj, i := "scurvy.notify.*", 0
 	natschan.Subscribe(subj, func(msg *nats.Msg) {
@@ -124,7 +125,7 @@ func main() {
 	natschan.Flush()
 
 	lerr := nc.LastError()
-	checkErr(lerr)
+	common.CheckErr(lerr)
 
 	for !reallyquit {
 		// connect
@@ -149,11 +150,5 @@ func handleprivmsg(conn *irc.Conn, line *irc.Line) {
 	default:
 		log.Printf("line: %s\n", line)
 		log.Printf("args: %s\n", line.Args)
-	}
-}
-
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
 	}
 }

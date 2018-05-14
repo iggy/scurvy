@@ -3,6 +3,7 @@ package msgs
 import (
 	"log"
 
+	"github.com/iggy/scurvy/common"
 	"github.com/iggy/scurvy/config"
 
 	"github.com/nats-io/go-nats"
@@ -23,16 +24,16 @@ func SendNatsMsg(Subject string, Msg NatsMsg) {
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	checkErr(err)
+	common.CheckErr(err)
 	defer nc.Close()
 	// c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	// checkErr(err)
+	// common.CheckErr(err)
 
 	nc.Publish(Subject, Msg.serialize())
 	nc.Flush()
 
 	lerr := nc.LastError()
-	checkErr(lerr)
+	common.CheckErr(lerr)
 	log.Printf("Published [%s] : '%s'\n", Subject, Msg)
 }
 
@@ -43,21 +44,15 @@ func SendNatsPing(Who string) {
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	checkErr(err)
+	common.CheckErr(err)
 	defer nc.Close()
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	checkErr(err)
+	common.CheckErr(err)
 
 	c.Publish("ping", Who)
 	c.Flush()
 
 	lerr := nc.LastError()
-	checkErr(lerr)
+	common.CheckErr(lerr)
 	// log.Printf("Published [ping] : '%s'\n", Who)
-}
-
-func checkErr(err error) {
-	if err != nil {
-		panic(err)
-	}
 }

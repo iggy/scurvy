@@ -35,6 +35,10 @@ before_script:
   - go get github.com/mitchellh/gox
   - go get github.com/tcnksm/ghr
 
+  - wget https://github.com/upx/upx/releases/download/v3.94/upx-3.94-amd64_linux.tar.xz
+  - tar -xf upx-3.94-amd64_linux.tar.xz
+  - mv upx-3.94-amd64_linux/upx $TRAVIS_BUILD_DIR
+
 script:
   # bunch of tests
   - echo "TRAVIS_GO_VERSION=${TRAVIS_GO_VERSION}"
@@ -46,6 +50,7 @@ script:
   - golint -set_exit_status $(go list ./...)
   # the actual build
   - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" ./...
+  - $TRAVIS_BUILD_DIR/upx $TRAVIS_BUILD_DIR/dist/*
 
   - mkdir -p $TRAVIS_BUILD_DIR/dist/etc
 

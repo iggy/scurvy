@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	fmt.Printf("scurvy webhook input daemon\n\n\n")
+	log.Println("scurvy webhook input daemon")
 
 	// Set config defaults - can be overridden in config file
 	viper.SetDefault("BindAddress", "127.0.0.1")
@@ -26,11 +26,13 @@ func main() {
 
 	router := NewRouter()
 
+	log.Printf("Attempting to listen on: %s\n", bindString)
+
 	log.Fatal(http.ListenAndServe(bindString, router))
 }
 
 func checkErr(err error) {
 	if err != nil {
-		panic(err)
+		log.Panicln(err)
 	}
 }

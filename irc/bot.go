@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 
@@ -57,7 +58,7 @@ func main() {
 				close(in)
 				break
 			}
-			fmt.Printf("stdin: %s", s)
+			log.Printf("stdin: %s", s)
 			if len(s) > 2 {
 				in <- s[0 : len(s)-1]
 			}
@@ -67,19 +68,19 @@ func main() {
 	// another goroutine for parsing stdin
 	go func() {
 		for cmd := range in {
-			fmt.Printf("Parse: %s\n", cmd)
+			log.Printf("Parse: %s\n", cmd)
 			if cmd[0] == ':' {
 				switch idx := strings.Index(cmd, " "); {
 				case cmd[1] == 'd':
-					fmt.Print(c.String())
+					log.Print(c.String())
 				case cmd[1] == 'n':
 					parts := strings.Split(cmd, " ")
 					username := strings.TrimSpace(parts[1])
 					// channelname := strings.TrimSpace(parts[2])
 					_, userIsOn := c.StateTracker().IsOn(ircChannelname, username)
-					fmt.Printf("Checking if %s is in %s: %t\n", username, ircChannelname, userIsOn)
+					log.Printf("Checking if %s is in %s: %t\n", username, ircChannelname, userIsOn)
 				case idx == -1:
-					fmt.Printf("Unknown command: %s\n", cmd)
+					log.Printf("Unknown command: %s\n", cmd)
 					continue
 				case cmd[1] == 'q':
 					reallyquit = true
@@ -109,10 +110,10 @@ func main() {
 	subj, i := "scurvy.notify.*", 0
 	natschan.Subscribe(subj, func(msg *nats.Msg) {
 		i++
-		fmt.Printf("[#%d] Received on [%s]: '%s'\n", i, msg.Subject, string(msg.Data))
+		log.Printf("[#%d] Received on [%s]: '%s'\n", i, msg.Subject, string(msg.Data))
 		var jmsg = msgs.NewDownload{}
 		if jerr := json.Unmarshal(msg.Data, &jmsg); jerr != nil {
-			panic(fmt.Errorf("fatal error reading json msg from nats: %s", jerr))
+			log.Panicf("fatal error reading json msg from nats: %s", jerr)
 		}
 		if msg.Subject == "scurvy.notify.newdownload" {
 			c.Privmsg(ircChannelname, fmt.Sprintf("Good news everyone! %s was downloaded to %s",
@@ -128,7 +129,7 @@ func main() {
 	for !reallyquit {
 		// connect
 		if err := c.Connect(); err != nil {
-			fmt.Printf("Connection error: %s\n", err.Error())
+			log.Printf("Connection error: %s\n", err.Error())
 		}
 
 		// wait for disconnect
@@ -140,14 +141,14 @@ func main() {
 
 func handleprivmsg(conn *irc.Conn, line *irc.Line) {
 	// This is similar to the inline handler functions, but it's broken out here because of length
-	// fmt.Printf("privmsg: %s\n", line)
-	// fmt.Printf("args: %s\n", line.Args)
+	// log.Printf("privmsg: %s\n", line)
+	// log.Printf("args: %s\n", line.Args)
 	switch line.Args[1] {
 	case "^search":
 		conn.Privmsg(ircChannelname, "Search not implemented yet")
 	default:
-		fmt.Printf("line: %s\n", line)
-		fmt.Printf("args: %s\n", line.Args)
+		log.Printf("line: %s\n", line)
+		log.Printf("args: %s\n", line.Args)
 	}
 }
 

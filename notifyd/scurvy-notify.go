@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"runtime"
 
 	"encoding/json"
@@ -16,10 +17,10 @@ import (
 )
 
 func printMsg(m *nats.Msg, i int) {
-	fmt.Printf("[#%d] Received on [%s]: '%s'\n", i, m.Subject, string(m.Data))
+	log.Printf("[#%d] Received on [%s]: '%s'\n", i, m.Subject, string(m.Data))
 	var jmsg = msgs.NewDownload{}
 	if jerr := json.Unmarshal(m.Data, &jmsg); jerr != nil {
-		panic(fmt.Errorf("fatal error reading json msg from nats: %s", jerr))
+		log.Panicf("fatal error reading json msg from nats: %s", jerr)
 	}
 	if m.Subject == "scurvy.notify.newdownload" {
 		notify.SendGeneralSlack(fmt.Sprintf("Good news everyone! %s was downloaded to %s",
@@ -29,11 +30,11 @@ func printMsg(m *nats.Msg, i int) {
 		notify.SendGeneralSlack(fmt.Sprintf("Bad news everyone! %s failed to downloaded to %s",
 			jmsg.Name, jmsg.Path))
 	}
-	// fmt.Printf("%s - %v - %v", m.Subject, m.Reply, m.Sub)
+	// log.Printf("%s - %v - %v", m.Subject, m.Reply, m.Sub)
 }
 
 func main() {
-	fmt.Printf("Scurvy Notification Daemon\n\n\n")
+	log.Printf("Scurvy Notification Daemon\n\n\n")
 
 	config.ReadConfig()
 

@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	// "github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -15,7 +16,7 @@ func ReadConfig() {
 
 	err := viper.ReadInConfig()
 	if err != nil { // Handle errors reading the config file
-		panic(fmt.Errorf("fatal error config file: %s", err))
+		log.Panicf("fatal error config file: %s", err)
 	}
 
 	// build the slack webhook address here and shove it back into viper for safe keeping

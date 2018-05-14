@@ -49,7 +49,7 @@ script:
   - gocyclo -over 19 $GO_FILES
   - golint -set_exit_status $(go list ./...)
   # the actual build
-  - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" ./...
+  - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -linkmode "external" -s -w' ./...
   - $TRAVIS_BUILD_DIR/upx $TRAVIS_BUILD_DIR/dist/*
 
   - mkdir -p $TRAVIS_BUILD_DIR/dist/etc

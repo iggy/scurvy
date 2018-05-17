@@ -48,11 +48,15 @@ script:
   - megacheck ./...
   - gocyclo -over 19 $GO_FILES
   - golint -set_exit_status $(go list ./...)
-  # the actual build
-  - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
-  - $TRAVIS_BUILD_DIR/upx $TRAVIS_BUILD_DIR/dist/*
 
-  - mkdir -p $TRAVIS_BUILD_DIR/dist/etc
+  # build the github release files
+  - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
+
+  # build the Docker release
+  - mkdir -p $TRAVIS_BUILD_DIR/ddist/etc
+  - gox -arch="amd64" -os="linux" -output="ddist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
+  - $TRAVIS_BUILD_DIR/upx $TRAVIS_BUILD_DIR/ddist/*
+
 
 after_success:
   # do the github release

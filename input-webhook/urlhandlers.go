@@ -117,7 +117,7 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(jstr)
 
 		// use the actual data we got
-
+		log.Println(jreqp)
 		nd := msgs.NewDownload{Name: jreqp.Params.Message, Path: "/scurvy"} // TODO find actual path
 		msgs.SendNatsMsg("scurvy.notify.newdownload", nd)
 	default:

@@ -86,18 +86,26 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 	case "JSONRPC.Version":
 		// just something we have to emulate to get sickbeard to talk to us
 		log.Printf("SICK: JSONRPC.Version called\n")
-		var jretver = JSONRPCVersion{Major: 8, Minor: 0, Patch: 0}
-		var jretres = JSONRPCVersionResult{Version: jretver}
-		var jret = JSONRPCVersionResponse{}
-		jret.ID = jreq.ID
-		jret.JSONRPC = jreq.JSONRPC
-		jret.Result = jretres
+		jret := &JSONRPCVersionResponse{ID: jreq.ID, JSONRPC: jreq.JSONRPC}
+		jret.Result.Version.Major = 8
+		jret.Result.Version.Minor = 0
+		jret.Result.Version.Patch = 0
+
 		jstr, err := json.Marshal(jret)
 		common.CheckErr(err)
 		w.Write(jstr)
 	case "GUI.ShowNotification":
 		// This case is actually where something has actually downloaded
 		log.Printf("SICK: GUI.ShowNotification JSONRPC request method\n")
+
+		// re-parse the JSON to get something more specific
+		var jreqp = JSONRPCRequestParamsGUISN{}
+		if jgsnerr := json.Unmarshal(body, &jreqp); jgsnerr != nil {
+			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+			w.WriteHeader(422) // unprocessable entity
+			eerr := json.NewEncoder(w).Encode(jgsnerr)
+			common.CheckErr(eerr)
+		}
 
 		// reply to the request
 		var jret = JSONRPCGenericResponse{}
@@ -109,7 +117,8 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(jstr)
 
 		// use the actual data we got
-		nd := msgs.NewDownload{Name: "foo", Path: "/scurvy"} // TODO find actual path
+
+		nd := msgs.NewDownload{Name: jreqp.Params.Message, Path: "/scurvy"} // TODO find actual path
 		msgs.SendNatsMsg("scurvy.notify.newdownload", nd)
 	default:
 		log.Printf("SICK: Unknown JSONRPC request method\n")

@@ -2,11 +2,23 @@
 
 package main
 
-// JSONRPCRequest - A request sent to us
+// JSONRPCRequest - A fairly generic request sent to us
 type JSONRPCRequest struct {
 	ID      int    `json:"id"`
 	Method  string `json:"method"`
 	JSONRPC string `json:"jsonrpc"`
+}
+
+// JSONRPCRequestParamsGUISN - A more specific request sent to us
+type JSONRPCRequestParamsGUISN struct {
+	ID      int    `json:"id"`
+	Method  string `json:"method"`
+	JSONRPC string `json:"jsonrpc"`
+	Params  struct {
+		Title   string `json:"title"`
+		Message string `json:"message"`
+		Image   string `json:"image"`
+	} `json:"params"`
 }
 
 // JSONRPCGenericResponse - A generic response
@@ -16,23 +28,17 @@ type JSONRPCGenericResponse struct {
 	Result  string `json:"result"`
 }
 
-// JSONRPCVersion - JSONRPC.Version response
-type JSONRPCVersion struct {
-	Major int `json:"major"`
-	Minor int `json:"minor"`
-	Patch int `json:"patch"`
-}
-
-// JSONRPCVersionResult - part of JSONRPCVersionReply
-type JSONRPCVersionResult struct {
-	Version JSONRPCVersion `json:"version"`
-}
-
 // JSONRPCVersionResponse - response for JSONRPC.Version method
 type JSONRPCVersionResponse struct {
-	ID      int                  `json:"id"`
-	JSONRPC string               `json:"jsonrpc"`
-	Result  JSONRPCVersionResult `json:"result"`
+	ID      int    `json:"id"`
+	JSONRPC string `json:"jsonrpc"`
+	Result  struct {
+		Version struct {
+			Major int `json:"major"`
+			Minor int `json:"minor"`
+			Patch int `json:"patch"`
+		} `json:"version"`
+	} `json:"result"`
 }
 
 // GUIShowNotificationResponse - GUI.ShowNotification response - uses JSONRPCGenericResponse

@@ -55,7 +55,7 @@ script:
   # build the Docker release
   - mkdir -p $TRAVIS_BUILD_DIR/ddist/etc
   - gox -arch="amd64" -os="linux" -output="ddist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
-  - $TRAVIS_BUILD_DIR/upx $TRAVIS_BUILD_DIR/ddist/*
+  - $TRAVIS_BUILD_DIR/upx $TRAVIS_BUILD_DIR/ddist/linux*
 
 
 after_success:

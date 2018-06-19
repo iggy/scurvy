@@ -139,6 +139,6 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	common.CheckErr(cerr)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	w.Write("Running")
+	io.WriteString(w, "Running")
 	log.Printf("DEF: %q (%q)\n", bytes.NewBuffer(body).String(), html.EscapeString(r.URL.Path))
 }

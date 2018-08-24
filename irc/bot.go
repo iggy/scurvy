@@ -27,6 +27,8 @@ func main() {
 	flag.Parse()
 	glog.Init()
 
+	config.ReadConfig()
+
 	// config irc connection
 	cfg := irc.NewConfig("scurvybot")
 	cfg.SSL = true
@@ -142,11 +144,15 @@ func main() {
 
 func handleprivmsg(conn *irc.Conn, line *irc.Line) {
 	// This is similar to the inline handler functions, but it's broken out here because of length
-	// log.Printf("privmsg: %s\n", line)
-	// log.Printf("args: %s\n", line.Args)
+	log.Printf("privmsg: %s\n", line)
+	log.Printf("args: %s\n", line.Args)
+	log.Println(conn)
 	switch line.Args[1] {
 	case "^search":
 		conn.Privmsg(ircChannelname, "Search not implemented yet")
+	case "^help":
+		conn.Privmsg(ircChannelname, "^help: this message")
+		conn.Privmsg(ircChannelname, "^search: search for media")
 	default:
 		log.Printf("line: %s\n", line)
 		log.Printf("args: %s\n", line.Args)

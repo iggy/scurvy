@@ -24,6 +24,7 @@ var ircPort = 6697
 var ircChannelname = "#testscurvybot"
 
 func main() {
+	log.Println("Initializing scurvy ircbot")
 	flag.Parse()
 	glog.Init()
 
@@ -58,6 +59,7 @@ func main() {
 		for {
 			s, err := con.ReadString('\n')
 			if err != nil {
+				log.Println("Error on ReadString, not reading from stdin anymore.")
 				close(in)
 				break
 			}

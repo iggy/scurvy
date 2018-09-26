@@ -52,9 +52,10 @@ script:
   # build the github release files
   - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
 
-  # build the Docker release
+  # build the Docker release (this has CGO_ENABLED=0 for static binary building
+  # for use in scratch images)
   - mkdir -p $TRAVIS_BUILD_DIR/ddist/etc
-  - gox -arch="amd64" -os="linux" -output="ddist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
+  - CGO_ENABLED=0 gox -arch="amd64" -os="linux" -output="ddist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
   - $TRAVIS_BUILD_DIR/upx $TRAVIS_BUILD_DIR/ddist/linux*
 
 

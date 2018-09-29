@@ -36,8 +36,7 @@ func sabnzbdHandler(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("body: %s\n", body)
 
-	// parse the json payload and figure out what they want to know
-	var jreq = SABJSONRequest{}
+	jreq := SABJSONRequest{}
 	if jerr := json.Unmarshal(body, &jreq); jerr != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
@@ -85,7 +84,7 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 	switch jreq.Method {
 	case "JSONRPC.Version":
 		// just something we have to emulate to get sickbeard to talk to us
-		log.Printf("SICK: JSONRPC.Version called\n")
+		log.Println("SICK: JSONRPC.Version called")
 		jret := &JSONRPCVersionResponse{ID: jreq.ID, JSONRPC: jreq.JSONRPC}
 		jret.Result.Version.Major = 8
 		jret.Result.Version.Minor = 0
@@ -96,7 +95,7 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(jstr)
 	case "GUI.ShowNotification":
 		// This case is actually where something has actually downloaded
-		log.Printf("SICK: GUI.ShowNotification JSONRPC request method\n")
+		log.Println("SICK: GUI.ShowNotification JSONRPC request method")
 
 		// re-parse the JSON to get something more specific
 		var jreqp = JSONRPCRequestParamsGUISN{}
@@ -121,7 +120,7 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		nd := msgs.NewDownload{Name: jreqp.Params.Message, Path: "/scurvy"} // TODO find actual path
 		msgs.SendNatsMsg("scurvy.notify.newdownload", nd)
 	default:
-		log.Printf("SICK: Unknown JSONRPC request method\n")
+		log.Println("SICK: Unknown JSONRPC request method")
 		var jret = JSONRPCGenericResponse{}
 		jret.ID = jreq.ID
 		jret.JSONRPC = jreq.JSONRPC

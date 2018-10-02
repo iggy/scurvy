@@ -2,7 +2,7 @@ language: go
 
 go:
   # build version target
-  - 1.10.x
+  - 1.11.x
   # test against master to see any future breakages
   - master
 
@@ -17,6 +17,8 @@ if: branch = master
 notifications:
   slack:
     secure: "HQmH10dvfHzfxWc1XZcia81jP0wCK9aOKLiBMrZA0tiLXxT1Q/3zU00CgO3f4M4wZltbmafOjodO2xMUvZpA8PmoCORR0R0KJaTNJxQRspi0P5IYnbUi875EJQron7SCAWwXR3K4xgozZTfgJGPjS9C6SAa5aRhxkSGRNNw6yHopVuwuAdNtU54SIqfrx9eMBiMd9vb2Y59xiDSnuYiRhC4ZgmxW0tturpWXYZp6LmnID9yGSMi1MXyCMbLMhx067MuPzY3PMwCoHinWedanddMYWxUnzEJLwXlOKoQ9AU8wYth8raryTviWbD/lnA39KoPfcwrZoBKfIWOzm+qUiQ7rglOUpUdtE96Z8VxJkbQMgCW9QqmupxFFiG/3tX5nvqCX7/pmP3m1mTf9AvU23fIuCZPGr/sz2nv8fFYoXLVkDujJG1gcTezhwBpNITDSIEYifSQPr3InUpMCVouQ4QLN+EcDpV3wXcUFxacXoCkZ+tdthMPUllMl2gJpf3NmsWvxK8rtR9RRxwC2/eP/tjnx7fQedWY4eV/Mr8HyxcGzzXv8wsDa14B12uSQ0Gdb6mVqPFgM2mtP/Sc+I7jHuGkwI1jJ9yWFJEDMEL1ESed6wXl7emWo1oMdNNJu+1lR6ca/Y1eZCSwZEpREyioKffsNGZEdPdBFRuC5Q2QWkxw="
+
+sudo: required
 
 services:
   - docker

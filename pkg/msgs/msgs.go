@@ -3,8 +3,8 @@ package msgs
 import (
 	"log"
 
-	"github.com/iggy/scurvy/common"
-	"github.com/iggy/scurvy/config"
+	"github.com/iggy/scurvy/pkg/config"
+	"github.com/iggy/scurvy/pkg/errors"
 
 	"github.com/nats-io/go-nats"
 	// "github.com/spf13/cobra"

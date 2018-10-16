@@ -17,8 +17,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/iggy/scurvy/config"
-	"github.com/iggy/scurvy/msgs"
+	"github.com/iggy/scurvy/pkg/config"
+	"github.com/iggy/scurvy/pkg/msgs"
 
 	"github.com/spf13/cobra"
 )

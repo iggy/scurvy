@@ -12,9 +12,9 @@ import (
 
 	irc "github.com/fluffle/goirc/client"
 	"github.com/fluffle/goirc/logging/glog"
-	"github.com/iggy/scurvy/common"
-	"github.com/iggy/scurvy/config"
-	"github.com/iggy/scurvy/msgs"
+	"github.com/iggy/scurvy/pkg/config"
+	"github.com/iggy/scurvy/pkg/errors"
+	"github.com/iggy/scurvy/pkg/msgs"
 	"github.com/nats-io/go-nats"
 	"github.com/spf13/viper"
 )

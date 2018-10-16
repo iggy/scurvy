@@ -14,7 +14,7 @@
 
 package main
 
-import "github.com/iggy/scurvy/sendnatsmsg/cmd"
+import "github.com/iggy/scurvy/cmd/sendnatsmsg/cmd"
 
 func main() {
 	cmd.Execute()

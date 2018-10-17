@@ -29,7 +29,7 @@ script:
 
 # only do the release steps if this is golang 1.11 and this isn't a PR
 after_success:
-  - [[ ${TRAVIS_GO_VERSION} == "1.11.x" && ${TRAVIS_PULL_REQUEST} == "false" ]] && make release
+  - if [[ "${TRAVIS_GO_VERSION}" == "1.11.x" && "${TRAVIS_PULL_REQUEST}" == "false" ]] ; then make release ; fi
 
 env:
   global:

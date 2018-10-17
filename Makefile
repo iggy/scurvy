@@ -40,9 +40,9 @@ docker:
 
 release:
 	# do the github release
-	echo docker run -e GITHUB_TOKEN scurvy:build ghr --repository scurvy --username iggy --replace $(shell date +%Y%m%d%H%M) dist/
+	docker run -e GITHUB_TOKEN scurvy:build ghr --repository scurvy --username iggy --replace $(shell date +%Y%m%d%H%M) dist/
 	# do the docker hub release
-	echo docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
-	echo docker push notiggy/scurvy-irc
-	echo docker push notiggy/scurvy-notifyd
-	echo docker push notiggy/scurvy-input-webhook
+	docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
+	docker push notiggy/scurvy-irc
+	docker push notiggy/scurvy-notifyd
+	docker push notiggy/scurvy-input-webhook

@@ -33,7 +33,7 @@ script:
 
 after_success:
   # do the github release
-  - docker run -e GITHUB_TOKEN scurvy:build ghr --username iggy --replace $DATETIME dist/
+  - docker run -e GITHUB_TOKEN scurvy:build ghr --username iggy --replace $(date +%Y%m%d%H%M) dist/
   # do the docker hub release
   - docker login -u $DOCKER_USER -p $DOCKER_PASS
   - for dir in input-webhook notifyd irc; do docker push notiggy/scurvy-$dir ; done

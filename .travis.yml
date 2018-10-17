@@ -26,7 +26,7 @@ services:
 # only do the release steps if this is golang 1.11 and this isn't a PR
 stages:
   - name: after_success
-    if: env(TRAVIS_GO_VERSION) =~ 1.11.* AND type != pull_request
+    if: env(TRAVIS_GO_VERSION) =~ 1.11.* AND env(TRAVIS_PULL_REQUEST) = "false"
 
 script:
   - make docker

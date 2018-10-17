@@ -23,50 +23,13 @@ sudo: required
 services:
   - docker
 
-stages:
-  - name: after_success
-    if: env(TRAVIS_GO_VERSION) ~= 1.10.*
-
-before_script:
-  - export GO_FILES=$(find . -iname '*.go' -type f)
-  - export DATETIME=$(date +%Y%m%d%H%M)
-
-  - go get github.com/golang/lint/golint
-  - go get honnef.co/go/tools/cmd/megacheck
-  - go get github.com/fzipp/gocyclo
-  - go get github.com/mitchellh/gox
-  - go get github.com/tcnksm/ghr
-
-  - wget https://github.com/upx/upx/releases/download/v3.94/upx-3.94-amd64_linux.tar.xz
-  - tar -xf upx-3.94-amd64_linux.tar.xz
-  - mv upx-3.94-amd64_linux/upx $TRAVIS_BUILD_DIR
-
 script:
-  # bunch of tests
-  - echo "TRAVIS_GO_VERSION=${TRAVIS_GO_VERSION}"
-  - test -z $(gofmt -s -l $GO_FILES)
-  - go test -v -race ./...
-  - go vet ./...
-  - megacheck ./...
-  - gocyclo -over 19 $GO_FILES
-  - golint -set_exit_status $(go list ./...)
+  - env
+  - make docker
 
-  # build the github release files
-  - gox -arch="amd64 arm 386" -os="linux" -output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
-
-  # build the Docker release (this has CGO_ENABLED=0 for static binary building
-  # for use in scratch images)
-  - mkdir -p $TRAVIS_BUILD_DIR/ddist/etc
-  - CGO_ENABLED=0 gox -arch="amd64" -os="linux" -output="ddist/{{.OS}}_{{.Arch}}_{{.Dir}}" -ldflags='-extldflags "-static" -s -w' -tags='netgo' ./...
-  - $TRAVIS_BUILD_DIR/upx $TRAVIS_BUILD_DIR/ddist/linux*
-
-
+# only do the release steps if this is golang 1.11 and this isn't a PR
 after_success:
-  # do the github release
-  - ghr --username iggy --replace $DATETIME dist/
-  # do the docker hub release
-  - docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - for dir in input-webhook notifyd irc; do docker build -t notiggy/scurvy-$dir -f $dir/Dockerfile . ; docker push notiggy/scurvy-$dir ; done
+  - if [[ "${TRAVIS_GO_VERSION}" == "1.11.x" && "${TRAVIS_PULL_REQUEST}" == "false" ]] ; then make release ; fi
 
 env:
   global:

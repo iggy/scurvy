@@ -1,1 +1,11 @@
 .git
+
+# We don't really want changes to these files to trigger cache invalidations
+# so don't send them to the server
+Dockerfile
+Makefile
+scurvy.yaml
+README.md
+TODO.md
+LICENSE
+.travis.yml

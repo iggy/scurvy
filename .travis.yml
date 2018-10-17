@@ -29,6 +29,7 @@ stages:
     if: env(TRAVIS_GO_VERSION) =~ 1.11.* AND env(TRAVIS_PULL_REQUEST) = "false"
 
 script:
+  - env
   - make docker
 
 after_success:

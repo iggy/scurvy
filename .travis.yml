@@ -23,21 +23,13 @@ sudo: required
 services:
   - docker
 
-# only do the release steps if this is golang 1.11 and this isn't a PR
-stages:
-  - name: after_success
-    if: env(TRAVIS_GO_VERSION) =~ 1.11.* AND type != pull_request
-
 script:
   - env
-  - echo make docker
+  - make docker
 
+# only do the release steps if this is golang 1.11 and this isn't a PR
 after_success:
-  # do the github release
-  - echo docker run -e GITHUB_TOKEN scurvy:build ghr --repository scurvy --username iggy --replace $(date +%Y%m%d%H%M) dist/
-  # do the docker hub release
-  - echo docker login -u $DOCKER_USER -p $DOCKER_PASS
-  - for dir in input-webhook notifyd irc; do echo docker push notiggy/scurvy-$dir ; done
+  - [[ ${TRAVIS_GO_VERSION} == "1.11.x" && ${TRAVIS_PULL_REQUEST} == "false" ]] && make release
 
 env:
   global:

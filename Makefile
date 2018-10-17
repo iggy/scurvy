@@ -37,3 +37,12 @@ docker:
 	docker build --target irc --tag notiggy/scurvy-irc .
 	docker build --target notifyd --tag notiggy/scurvy-notifyd .
 	docker build --target input-webhook --tag notiggy/scurvy-input-webhook .
+
+release:
+	# do the github release
+	echo docker run -e GITHUB_TOKEN scurvy:build ghr --repository scurvy --username iggy --replace $(shell date +%Y%m%d%H%M) dist/
+	# do the docker hub release
+	echo docker login -u $(DOCKER_USER) -p $(DOCKER_PASS)
+	echo docker push notiggy/scurvy-irc
+	echo docker push notiggy/scurvy-notifyd
+	echo docker push notiggy/scurvy-input-webhook

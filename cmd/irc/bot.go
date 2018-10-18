@@ -36,6 +36,10 @@ func main() {
 	cfg.SSLConfig = &tls.Config{ServerName: ircServername}
 	cfg.Server = fmt.Sprintf("%s:%d", ircServername, ircPort)
 	cfg.NewNick = func(n string) string { return n + "^" }
+	// different Recover function that exits (vs just logging)
+	cfg.Recover = func(conn *irc.Conn, line *irc.Line) {
+		log.Panicln("Error in irc handler. Hopefully there's a useful error above.")
+	}
 	c := irc.Client(cfg)
 	c.EnableStateTracking()
 

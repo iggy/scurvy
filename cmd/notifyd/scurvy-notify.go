@@ -17,8 +17,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func printMsg(m *nats.Msg, i int) {
-	log.Printf("[#%d] Received on [%s]: '%s'\n", i, m.Subject, string(m.Data))
+func handleNatsMsg(m *nats.Msg) {
+	log.Printf("Received on [%s]: '%s'\n", m.Subject, string(m.Data))
 	var jmsg = msgs.NewDownload{}
 	if jerr := json.Unmarshal(m.Data, &jmsg); jerr != nil {
 		log.Panicf("fatal error reading json msg from nats: %s", jerr)
@@ -45,11 +45,8 @@ func main() {
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	common.CheckErr(err)
 
-	subj, i := "scurvy.notify.*", 0
-	c.Subscribe(subj, func(msg *nats.Msg) {
-		i++
-		printMsg(msg, i)
-	})
+	subj := "scurvy.notify.*"
+	c.Subscribe(subj, handleNatsMsg)
 	c.Flush()
 
 	lerr := nc.LastError()

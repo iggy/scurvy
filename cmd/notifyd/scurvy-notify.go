@@ -41,16 +41,16 @@ func main() {
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	common.CheckErr(err)
+	errors.CheckErr(err)
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	common.CheckErr(err)
+	errors.CheckErr(err)
 
 	subj := "scurvy.notify.*"
 	c.Subscribe(subj, handleNatsMsg)
 	c.Flush()
 
 	lerr := nc.LastError()
-	common.CheckErr(lerr)
+	errors.CheckErr(lerr)
 	// sendAdminSlack("Initializing Scurvy Notification Daemon.")
 
 	runtime.Goexit()

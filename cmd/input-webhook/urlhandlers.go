@@ -29,6 +29,9 @@ func couchpotatoHandler(w http.ResponseWriter, r *http.Request) {
 
 // handle notifications from SABNZBD
 func sabnzbdHandler(w http.ResponseWriter, r *http.Request) {
+	// Some examples:
+	// body: {"message": "Too little diskspace forcing PAUSE", "version": "1.0", "type": "info", "title": "SABnzbd: Warning"}
+
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	errors.CheckErr(err)
 	cerr := r.Body.Close()
@@ -53,6 +56,10 @@ func sabnzbdHandler(w http.ResponseWriter, r *http.Request) {
 	if jreq.Title == "SABnzbd: Job failed" {
 		fd := msgs.FailedDownload{Name: jreq.Message, Path: "/scurvy"} // TODO find actual path}
 		msgs.SendNatsMsg("scurvy.notify.faileddownload", fd)
+	}
+	if jreq.Title == "SABnzbd: Warning" {
+		df := msgs.DiskFull{Message: jreq.Title}
+		msgs.SendNatsMsg("scurvy.notify.diskfull", df)
 	}
 
 }

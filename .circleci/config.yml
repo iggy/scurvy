@@ -32,6 +32,8 @@ jobs:
     branches:
       only:
         - master
+    docker:
+      - image: circleci/golang:1.11
     steps:
       - checkout
       # enable docker in CircleCI

@@ -28,7 +28,15 @@ jobs:
       # specify any bash command here prefixed with `run: `
       - run: make docker
 
+  deploy:
+    branches:
+      only:
+        - master
+    steps:
+      - checkout
+      # enable docker in CircleCI
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: make release
 
-# TODO
-# make release if this is a master commit
-# set GITHUB_TOKEN, DOCKER_USER, DOCKER_PASS
+# GITHUB_TOKEN, DOCKER_USER, DOCKER_PASS env variables are set in CircleCI config

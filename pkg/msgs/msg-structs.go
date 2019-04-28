@@ -31,6 +31,16 @@ func (s FailedDownload) serialize() []byte {
 	return b
 }
 
+// DiskFull - struct for Marshal'ing disk full messages from SABNZBD
+type DiskFull struct {
+	Message string
+}
+
+func (s DiskFull) serialize() []byte {
+	b, _ := json.Marshal(s)
+	return b
+}
+
 // ReportFiles = struct for Marshal'ing the report files messages
 type ReportFiles struct {
 	Full    bool

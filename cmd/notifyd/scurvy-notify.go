@@ -17,8 +17,8 @@ import (
 	"github.com/spf13/viper"
 )
 
-func printMsg(m *nats.Msg, i int) {
-	log.Printf("[#%d] Received on [%s]: '%s'\n", i, m.Subject, string(m.Data))
+func handleNatsMsg(m *nats.Msg) {
+	log.Printf("Received on [%s]: '%s'\n", m.Subject, string(m.Data))
 	var jmsg = msgs.NewDownload{}
 	if jerr := json.Unmarshal(m.Data, &jmsg); jerr != nil {
 		log.Panicf("fatal error reading json msg from nats: %s", jerr)
@@ -41,19 +41,16 @@ func main() {
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	common.CheckErr(err)
+	errors.CheckErr(err)
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	common.CheckErr(err)
+	errors.CheckErr(err)
 
-	subj, i := "scurvy.notify.*", 0
-	c.Subscribe(subj, func(msg *nats.Msg) {
-		i++
-		printMsg(msg, i)
-	})
+	subj := "scurvy.notify.*"
+	c.Subscribe(subj, handleNatsMsg)
 	c.Flush()
 
 	lerr := nc.LastError()
-	common.CheckErr(lerr)
+	errors.CheckErr(lerr)
 	// sendAdminSlack("Initializing Scurvy Notification Daemon.")
 
 	runtime.Goexit()

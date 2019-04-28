@@ -19,3 +19,4 @@ dist/
 # skip some local files
 scurvy.db
 scurvy.yaml
+Makefile.bak

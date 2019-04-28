@@ -24,16 +24,16 @@ func SendNatsMsg(Subject string, Msg NatsMsg) {
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	common.CheckErr(err)
+	errors.CheckErr(err)
 	defer nc.Close()
 	// c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	// common.CheckErr(err)
+	// errors.CheckErr(err)
 
 	nc.Publish(Subject, Msg.serialize())
 	nc.Flush()
 
 	lerr := nc.LastError()
-	common.CheckErr(lerr)
+	errors.CheckErr(lerr)
 	log.Printf("Published [%s] : '%s'\n", Subject, Msg)
 }
 
@@ -44,15 +44,15 @@ func SendNatsPing(Who string) {
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	common.CheckErr(err)
+	errors.CheckErr(err)
 	defer nc.Close()
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	common.CheckErr(err)
+	errors.CheckErr(err)
 
 	c.Publish("ping", Who)
 	c.Flush()
 
 	lerr := nc.LastError()
-	common.CheckErr(lerr)
+	errors.CheckErr(lerr)
 	// log.Printf("Published [ping] : '%s'\n", Who)
 }

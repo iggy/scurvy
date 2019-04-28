@@ -6,7 +6,7 @@ WORKDIR /go/src/github.com/iggy/scurvy/
 RUN apk add git upx gcc libc-dev
 
 RUN go get -u golang.org/x/lint/golint \
-	honnef.co/go/tools/cmd/megacheck \
+	honnef.co/go/tools/cmd/staticcheck \
 	github.com/fzipp/gocyclo
 
 # Use add here to invalidate the cache
@@ -21,7 +21,7 @@ RUN gofmt -l -s -w ./cmd ./pkg
 # go test -race basically doesn't work with alpine/musl
 # RUN go test -v -race ./...
 RUN go vet ./...
-RUN megacheck ./...
+RUN staticcheck ./...
 # RUN gocyclo -over 19 $GO_FILES
 RUN golint -set_exit_status $(go list ./...)
 

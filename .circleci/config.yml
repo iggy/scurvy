@@ -14,32 +14,36 @@ jobs:
       - image: circleci/golang:1.11
     working_directory: /go/src/github.com/iggy/scurvy
     steps:
-      - run: env
       - checkout
       # enable docker in CircleCI
       - setup_remote_docker
       - run: make docker
-      - run: docker version ; docker images
+      # temporary workaround for releasing on master branch
+      - run: "if [ \"$CIRCLE_BRANCH\" == \"master\" ] ; then make release ; fi"
 
-  deploy:
-    docker:
-      - image: circleci/golang:1.11
-    working_directory: /go/src/github.com/iggy/scurvy
-    steps:
-      - run: env
-      # enable docker in CircleCI
-      - setup_remote_docker
-      - run: docker version ; docker images
-      - run: make release
+  # See note below
+  # deploy:
+  #   docker:
+  #     - image: circleci/golang:1.11
+  #   working_directory: /go/src/github.com/iggy/scurvy
+  #   steps:
+  #     - run: env
+  #     # enable docker in CircleCI
+  #     - setup_remote_docker
+  #     - run: docker version ; docker images
+  #     - run: make release
 
 workflows:
   version: 2
   build-and-deploy:
     jobs:
       - build
-      - deploy:
-          requires:
-            - build
-          filters:
-            branches:
-              only: master
+      # This multi job workflow doesn't work because there is no way to share the remote_docker
+      # between jobs, CircleCI seems to be adding more functionality to v2 style jobs, so maybe
+      # revisit this later
+      # - deploy:
+      #     requires:
+      #       - build
+      #     filters:
+      #       branches:
+      #         only: master

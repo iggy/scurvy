@@ -19,7 +19,7 @@ jobs:
       - setup_remote_docker
       - run: make docker
       # temporary workaround for releasing on master branch
-      - run: [ "$CIRCLE_BRANCH" == "master" ] && make release
+      - run: '[ "$CIRCLE_BRANCH" == "master" ] && make release'
 
   # See note below
   # deploy:

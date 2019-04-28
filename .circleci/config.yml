@@ -1,31 +1,35 @@
 # Golang CircleCI 2.0 configuration file
 #
 # Check https://circleci.com/docs/2.0/language-go/ for more details
+#
+# Notes:
+# * docker_layer_caching is only available to paid accounts
+# * GITHUB_TOKEN, DOCKER_USER, DOCKER_PASS env variables are set in CircleCI config
+#
+
 version: 2
 jobs:
   build:
     docker:
       - image: circleci/golang:1.11
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/iggy/scurvy
     steps:
+      - run: env
       - checkout
-
       # enable docker in CircleCI
-      - setup_remote_docker:
-          docker_layer_caching: true
-
-      # specify any bash command here prefixed with `run: `
+      - setup_remote_docker
       - run: make docker
+      - run: docker version ; docker images
 
   deploy:
     docker:
       - image: circleci/golang:1.11
-    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
+    working_directory: /go/src/github.com/iggy/scurvy
     steps:
-      - checkout
+      - run: env
       # enable docker in CircleCI
-      - setup_remote_docker:
-          docker_layer_caching: true
+      - setup_remote_docker
+      - run: docker version ; docker images
       - run: make release
 
 workflows:
@@ -39,6 +43,3 @@ workflows:
           filters:
             branches:
               only: master
-
-
-# GITHUB_TOKEN, DOCKER_USER, DOCKER_PASS env variables are set in CircleCI config

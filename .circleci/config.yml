@@ -5,18 +5,7 @@ version: 2
 jobs:
   build:
     docker:
-      # specify the version
       - image: circleci/golang:1.11
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
-    #### TEMPLATE_NOTE: go expects specific checkout path representing url
-    #### expecting it in the form of
-    ####   /go/src/github.com/circleci/go-tool
-    ####   /go/src/bitbucket.org/circleci/go-tool
     working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
     steps:
       - checkout
@@ -29,16 +18,27 @@ jobs:
       - run: make docker
 
   deploy:
-    branches:
-      only:
-        - master
     docker:
       - image: circleci/golang:1.11
+    working_directory: /go/src/github.com/{{ORG_NAME}}/{{REPO_NAME}}
     steps:
       - checkout
       # enable docker in CircleCI
       - setup_remote_docker:
           docker_layer_caching: true
       - run: make release
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build
+      - deploy:
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
+
 
 # GITHUB_TOKEN, DOCKER_USER, DOCKER_PASS env variables are set in CircleCI config

@@ -78,6 +78,7 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 	// parse the json payload and figure out what they want to know
 	var jreq = JSONRPCRequest{}
 	if jerr := json.Unmarshal(body, &jreq); jerr != nil {
+		log.Printf("Failed to unmarshall json body: \n%v\n%v", jerr, body)
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
 		eerr := json.NewEncoder(w).Encode(jerr)

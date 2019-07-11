@@ -16,7 +16,10 @@ jobs:
     steps:
       - checkout
       # enable docker in CircleCI
-      - setup_remote_docker
+      - setup_remote_docker:
+          # We actually need 19.03 for buildx, but we'll leave this for now
+          # https://circleci.com/docs/2.0/building-docker-images/#docker-version
+          version: 18.09.3
       - run: make docker
       # temporary workaround for releasing on master branch
       - run: "if [ \"$CIRCLE_BRANCH\" == \"master\" ] ; then make release ; fi"

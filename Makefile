@@ -37,6 +37,12 @@ docker:
 	docker build --target irc --tag notiggy/scurvy-irc .
 	docker build --target notifyd --tag notiggy/scurvy-notifyd .
 	docker build --target input-webhook --tag notiggy/scurvy-input-webhook .
+	# the below line needs a _very_ new version of docker (i.e. experimental)
+	# I will just run this locally for now, but need to hook it up to CI later
+	# docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t notiggy/scurvy-irc:latest --target irc --pull --push .
+	# docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t notiggy/scurvy-notifyd:latest --target notifyd --pull --push .
+	# docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t notiggy/scurvy-input-webhook:latest --target input-webhook --pull --push .
+	# docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t notiggy/scurvy-syncd:latest --target syncd --pull --push .
 
 release:
 	# do the github release

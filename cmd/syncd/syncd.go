@@ -32,10 +32,11 @@ func printMsg(m *nats.Msg, i int) {
 		log.Printf("%s\n", jmsg.Name)
 		log.Printf("Running sync command: %s\n", syncCmd)
 		cmd := exec.Command(syncCmd)
-		err := cmd.Run()
+		stdoe, err := cmd.CombinedOutput()
 		if err != nil {
 			log.Printf("Command error code: %v\n", err)
 		}
+		log.Println(stdoe)
 	}
 	if m.Subject == "scurvy.notify.reportfiles" {
 		log.Printf("Reporting current files to master\n")

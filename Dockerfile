@@ -1,3 +1,8 @@
+# we set this here because buildx normally sets it for us, but
+# CircleCI doesn't support a new enough docker, so we have to
+# pass this arg manually when in CI
+ARG BUILDPLATFORM
+
 # Run tests stage (we only run this on the BUILDPLATFORM)
 FROM --platform=$BUILDPLATFORM golang:alpine as test
 

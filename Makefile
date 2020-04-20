@@ -32,11 +32,11 @@ host_build: host_check
 # the same packages over and over
 # Also lets us use the same method to build locally and in travis
 docker:
-	docker build --pull --tag scurvy:test .
-	docker build --target build --tag scurvy:build .
-	docker build --target irc --tag notiggy/scurvy-irc .
-	docker build --target notifyd --tag notiggy/scurvy-notifyd .
-	docker build --target input-webhook --tag notiggy/scurvy-input-webhook .
+	docker build --build-arg=BUILDPLATFORM=linux/amd64 --pull --tag scurvy:test .
+	docker build --build-arg=BUILDPLATFORM=linux/amd64 --target build --tag scurvy:build .
+	docker build --build-arg=BUILDPLATFORM=linux/amd64 --target irc --tag notiggy/scurvy-irc .
+	docker build --build-arg=BUILDPLATFORM=linux/amd64 --target notifyd --tag notiggy/scurvy-notifyd .
+	docker build --build-arg=BUILDPLATFORM=linux/amd64 --target input-webhook --tag notiggy/scurvy-input-webhook .
 	# the below line needs a _very_ new version of docker (i.e. experimental)
 	# I will just run this locally for now, but need to hook it up to CI later
 	# docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t notiggy/scurvy-irc:latest --target irc --pull --push .

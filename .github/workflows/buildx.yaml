@@ -11,8 +11,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build/push image
-    env:
-      PUBLISH: ${{ github.ref == 'master' }}
     strategy:
       matrix:
         target:
@@ -25,6 +23,10 @@ jobs:
         uses: actions/checkout@master
       - name: Build and publish ${{ matrix.target }} image
         uses: ilteoood/docker_buildx@1.0.4
+        env:
+          PUBLISH: ${{ github.ref == 'refs/heads/master' }}
+          PUBLISH2: ${{ contains(github.ref, 'master') }}
+          REF: ${{ github.ref }}
         with:
           publish: ${{ env.PUBLISH }}
           imageName: notiggy/scurvy-${{ matrix.target }}

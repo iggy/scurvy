@@ -1,3 +1,8 @@
+# we set this here because buildx normally sets it for us, but
+# CircleCI doesn't support a new enough docker, so we have to
+# pass this arg manually when in CI
+# ARG BUILDPLATFORM
+
 # Run tests stage (we only run this on the BUILDPLATFORM)
 FROM --platform=$BUILDPLATFORM golang:alpine as test
 
@@ -104,7 +109,7 @@ ARG TARGETOS
 ARG TARGETARCH
 COPY --from=build /ddist/${TARGETOS}_${TARGETARCH}_syncd /syncd
 COPY --from=build /ddist/etc /
-COPY --from=build /go/src/github.com/iggy/scurvy/cmd/syncd/sync_files.sh /
+# COPY --from=build /go/src/github.com/iggy/scurvy/cmd/syncd/sync_files.sh /
 
 # Need the ca-certificates for the NATS TLS cert and using rsync for the
 # file sync for now

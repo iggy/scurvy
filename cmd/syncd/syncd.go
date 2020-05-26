@@ -16,7 +16,7 @@ import (
 	"github.com/iggy/scurvy/pkg/msgs"
 	"github.com/iggy/scurvy/pkg/notify"
 
-	"github.com/nats-io/go-nats"
+	"github.com/nats-io/nats.go"
 	// "github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -37,6 +37,7 @@ func printMsg(m *nats.Msg, i int) {
 			log.Printf("Command error code: %v\n", err)
 		}
 		log.Println(stdoe)
+		log.Println("Finished running sync command")
 	}
 	if m.Subject == "scurvy.notify.reportfiles" {
 		log.Printf("Reporting current files to master\n")

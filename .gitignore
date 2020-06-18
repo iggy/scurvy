@@ -20,3 +20,4 @@ dist/
 scurvy.db
 scurvy.yaml
 Makefile.bak
+*.code-workspace

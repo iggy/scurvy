@@ -2,6 +2,7 @@ package msgs
 
 import (
 	"encoding/json"
+	"log"
 )
 
 // NatsMsg - a msg that we send to the Nats MQ bus
@@ -16,7 +17,10 @@ type NewDownload struct {
 }
 
 func (s NewDownload) serialize() []byte {
-	b, _ := json.Marshal(s)
+	b, err := json.Marshal(s)
+	if err != nil {
+		log.Println("Failed json.Marshal", err, b, s)
+	}
 	return b
 }
 
@@ -27,7 +31,10 @@ type FailedDownload struct {
 }
 
 func (s FailedDownload) serialize() []byte {
-	b, _ := json.Marshal(s)
+	b, err := json.Marshal(s)
+	if err != nil {
+		log.Println("Failed json.Marshal", err, b, s)
+	}
 	return b
 }
 
@@ -37,7 +44,10 @@ type DiskFull struct {
 }
 
 func (s DiskFull) serialize() []byte {
-	b, _ := json.Marshal(s)
+	b, err := json.Marshal(s)
+	if err != nil {
+		log.Println("Failed json.Marshal", err, b, s)
+	}
 	return b
 }
 
@@ -48,6 +58,9 @@ type ReportFiles struct {
 }
 
 func (s ReportFiles) serialize() []byte {
-	b, _ := json.Marshal(s)
+	b, err := json.Marshal(s)
+	if err != nil {
+		log.Println("Failed json.Marshal", err, b, s)
+	}
 	return b
 }

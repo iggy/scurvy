@@ -82,10 +82,13 @@ func main() {
 	errors.CheckErr(err)
 
 	subj, i := "scurvy.notify.newdownload", 0
-	c.Subscribe(subj, func(msg *nats.Msg) {
+	subs, err := c.Subscribe(subj, func(msg *nats.Msg) {
 		i++
 		printMsg(msg, i)
 	})
+	if err != nil {
+		log.Println("Failed to subscribe to nats", err, subj, subs)
+	}
 	c.Flush()
 
 	lerr := nc.LastError()

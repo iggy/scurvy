@@ -2,9 +2,8 @@ package notify
 
 import (
 	"bytes"
-	"log"
-
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/spf13/viper"
@@ -28,7 +27,10 @@ func SendSlack(msg string, channel string) {
 		"username": "scurvy",
 	}
 
-	jsonValue, _ := json.Marshal(values)
+	jsonValue, err := json.Marshal(values)
+	if err != nil {
+		log.Println("Error json.marhalling", err, values)
+	}
 
 	resp, err := http.Post(
 		viper.GetString("webhook_address"),

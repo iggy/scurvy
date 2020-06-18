@@ -131,7 +131,7 @@ func main() {
 
 	subj, i := "scurvy.notify.*", 0
 	log.Println("Setting up subscription")
-	natschan.Subscribe(subj, func(msg *nats.Msg) {
+	subs, err := natschan.Subscribe(subj, func(msg *nats.Msg) {
 		i++
 		log.Printf("[#%d] Received on [%s]: '%s'\n", i, msg.Subject, string(msg.Data))
 		var jmsg = msgs.NewDownload{}
@@ -144,6 +144,9 @@ func main() {
 		}
 
 	})
+	if err != nil {
+		log.Println("Failed to subscribe to the nats chan", err, subj, subs)
+	}
 	natschan.Flush()
 
 	lerr := nc.LastError()

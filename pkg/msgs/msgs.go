@@ -5,9 +5,7 @@ import (
 
 	"github.com/iggy/scurvy/pkg/config"
 	"github.com/iggy/scurvy/pkg/errors"
-
 	"github.com/nats-io/nats.go"
-	// "github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
@@ -29,11 +27,12 @@ func SendNatsMsg(Subject string, Msg NatsMsg) {
 	// c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	// errors.CheckErr(err)
 
-	nc.Publish(Subject, Msg.serialize())
+	err = nc.Publish(Subject, Msg.serialize())
+	errors.CheckErr(err)
 	nc.Flush()
 
-	lerr := nc.LastError()
-	errors.CheckErr(lerr)
+	err = nc.LastError()
+	errors.CheckErr(err)
 	log.Printf("Published [%s] : '%s'\n", Subject, Msg)
 }
 
@@ -49,10 +48,11 @@ func SendNatsPing(Who string) {
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
 	errors.CheckErr(err)
 
-	c.Publish("ping", Who)
+	err = c.Publish("ping", Who)
+	errors.CheckErr(err)
 	c.Flush()
 
-	lerr := nc.LastError()
-	errors.CheckErr(lerr)
+	err = nc.LastError()
+	errors.CheckErr(err)
 	// log.Printf("Published [ping] : '%s'\n", Who)
 }

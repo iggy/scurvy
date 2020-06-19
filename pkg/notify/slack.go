@@ -2,8 +2,8 @@ package notify
 
 import (
 	"bytes"
-
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/spf13/viper"
@@ -11,12 +11,12 @@ import (
 
 // SendGeneralSlack Send a slack message to the general channel
 func SendGeneralSlack(msg string) {
-	SendSlack(msg, "#general")
+	SendSlack(msg, viper.GetString("slack.general_channel"))
 }
 
 // SendAdminSlack Send a slack message to the admin channel
 func SendAdminSlack(msg string) {
-	SendSlack(msg, "#admins")
+	SendSlack(msg, viper.GetString("slack.admin_channel"))
 }
 
 // SendSlack Send a slack message
@@ -27,7 +27,17 @@ func SendSlack(msg string, channel string) {
 		"username": "scurvy",
 	}
 
-	jsonValue, _ := json.Marshal(values)
+	jsonValue, err := json.Marshal(values)
+	if err != nil {
+		log.Println("Error json.marhalling", err, values)
+	}
 
-	http.Post(viper.GetString("webhook_address"), "application/json", bytes.NewBuffer(jsonValue))
+	resp, err := http.Post(
+		viper.GetString("webhook_address"),
+		"application/json",
+		bytes.NewBuffer(jsonValue),
+	)
+	if err != nil {
+		log.Println("Error posting to slack", err, resp)
+	}
 }

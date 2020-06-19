@@ -4,11 +4,11 @@
 # ARG BUILDPLATFORM
 
 # Run tests stage (we only run this on the BUILDPLATFORM)
-FROM --platform=$BUILDPLATFORM golang:alpine as test
+FROM --platform=$BUILDPLATFORM golang:alpine3.12 as test
 
 WORKDIR /go/src/github.com/iggy/scurvy/
 
-RUN apk add git upx gcc libc-dev
+RUN apk add --no-cache git upx gcc libc-dev
 
 RUN go get -u golang.org/x/lint/golint \
 	honnef.co/go/tools/cmd/staticcheck \
@@ -33,11 +33,11 @@ RUN golint -set_exit_status $(go list ./...)
 
 
 # Build binaries stage (we only run this on the BUILDPLATFORM)
-FROM --platform=$BUILDPLATFORM golang:alpine as build
+FROM --platform=$BUILDPLATFORM golang:alpine3.12 as build
 
 WORKDIR /go/src/github.com/iggy/scurvy/
 
-RUN apk add git upx gcc libc-dev
+RUN apk add --no-cache git upx gcc libc-dev
 
 RUN go get -u github.com/mitchellh/gox \
 	github.com/tcnksm/ghr

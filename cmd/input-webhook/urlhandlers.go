@@ -88,7 +88,6 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 
 	// answer them
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
 	switch jreq.Method {
 	case "JSONRPC.Version":
 		// just something we have to emulate to get sickbeard to talk to us
@@ -100,7 +99,10 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 
 		jstr, err := json.Marshal(jret)
 		errors.CheckErr(err)
-		w.Write(jstr)
+		c, err := w.Write(jstr)
+		if err != nil {
+			log.Println("Failed to write json response", jstr, err, c)
+		}
 	case "GUI.ShowNotification":
 		// This case is actually where something has actually downloaded
 		log.Println("SICK: GUI.ShowNotification JSONRPC request method")
@@ -121,7 +123,10 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		jret.Result = "OK"
 		jstr, err := json.Marshal(jret)
 		errors.CheckErr(err)
-		w.Write(jstr)
+		c, err := w.Write(jstr)
+		if err != nil {
+			log.Println("Failed to write json response", jstr, err, c)
+		}
 
 		// use the actual data we got
 		log.Println(jreqp)
@@ -135,7 +140,10 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		jret.Result = "Error"
 		jstr, err := json.Marshal(jret)
 		errors.CheckErr(err)
-		w.Write(jstr)
+		c, err := w.Write(jstr)
+		if err != nil {
+			log.Println("Failed to write json response", jstr, err, c)
+		}
 	}
 }
 
@@ -146,6 +154,9 @@ func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	errors.CheckErr(cerr)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, "Running")
+	c, err := io.WriteString(w, "Running")
+	if err != nil {
+		log.Println("Failed to write defaultHandler response", err, c)
+	}
 	log.Printf("DEF: %q (%q)\n", bytes.NewBuffer(body).String(), html.EscapeString(r.URL.Path))
 }

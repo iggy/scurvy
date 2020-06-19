@@ -54,7 +54,10 @@ func main() {
 	errors.CheckErr(err)
 
 	subj := "scurvy.notify.*"
-	c.Subscribe(subj, handleNatsMsg)
+	subs, err := c.Subscribe(subj, handleNatsMsg)
+	if err != nil {
+		log.Println("Failed to subscribe to nats", err, subj, subs)
+	}
 	c.Flush()
 
 	lerr := nc.LastError()

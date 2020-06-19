@@ -13,10 +13,8 @@ type JSONRPCRequest struct {
 
 // JSONRPCRequestParamsGUISN - A more specific request sent to us
 type JSONRPCRequestParamsGUISN struct {
-	ID      int    `json:"id"`
-	Method  string `json:"method"`
-	JSONRPC string `json:"jsonrpc"`
-	Params  struct {
+	JSONRPCRequest
+	Params struct {
 		Title   string `json:"title"`
 		Message string `json:"message"`
 		Image   string `json:"image"`

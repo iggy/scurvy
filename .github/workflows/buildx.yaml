@@ -8,6 +8,14 @@ name: buildx for arm/arm64/amd64
       - master
 
 jobs:
+  super-linter:
+    runs-on: ubuntu-latest
+    name: Run GitHub's Super Linter
+    steps:
+      - uses: actions/checkout@v2
+      - name: Super Linter
+        uses: github/super-linter@v2.0.0
+
   build:
     runs-on: ubuntu-latest
     name: Build/push image

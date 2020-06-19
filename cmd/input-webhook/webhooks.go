@@ -3,11 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-
 	"net/http"
 
 	"github.com/iggy/scurvy/pkg/config"
-
 	"github.com/spf13/viper"
 )
 

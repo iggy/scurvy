@@ -14,7 +14,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Super Linter
-        uses: github/super-linter@v2.0.0
+        uses: github/super-linter@v2.1.0
 
   build:
     runs-on: ubuntu-latest

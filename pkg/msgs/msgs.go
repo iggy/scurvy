@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/iggy/scurvy/pkg/config"
-	"github.com/iggy/scurvy/pkg/errors"
 	"github.com/nats-io/nats.go"
 	"github.com/spf13/viper"
 )
@@ -22,37 +21,56 @@ func SendNatsMsg(Subject string, Msg NatsMsg) {
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	errors.CheckErr(err)
+	if err != nil {
+		log.Println("failed to connect to nats", err)
+	}
 	defer nc.Close()
 	// c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	// errors.CheckErr(err)
+	// if err != nil { log.Println("failed", err) }
 
 	err = nc.Publish(Subject, Msg.serialize())
-	errors.CheckErr(err)
+	if err != nil {
+		log.Println("failed to publish message", err)
+	}
 	nc.Flush()
 
 	err = nc.LastError()
-	errors.CheckErr(err)
+	if err != nil {
+		log.Println("failed lasterror, not sure what this means", err)
+	}
 	log.Printf("Published [%s] : '%s'\n", Subject, Msg)
 }
 
 // SendNatsPing - send a ping message to nats, there's something on the other end that listens and
 // alerts if a host doesn't check in for a while
+// Nothing in this function should panic... the pings aren't that important
 func SendNatsPing(Who string) {
 	config.ReadConfig()
 
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	errors.CheckErr(err)
+	if err != nil {
+		log.Println("SendNatsPing: failed to connect to send ping", err)
+	}
 	defer nc.Close()
 	c, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	errors.CheckErr(err)
+	if err != nil {
+		log.Println("SendNatsPing: failed to setup encoded connection", err)
+	}
 
 	err = c.Publish("ping", Who)
-	errors.CheckErr(err)
+	if err != nil {
+		log.Println("SendNatsPing: failed to publish ping message", err)
+	}
 	c.Flush()
 
 	err = nc.LastError()
-	errors.CheckErr(err)
+	if err != nil {
+		log.Println("SendNatsPing: failed last error, not sure what this means", err)
+	}
+	err = nc.Drain()
+	if err != nil {
+		log.Println("SendNatsPing: failed to drain", err)
+	}
 	// log.Printf("Published [ping] : '%s'\n", Who)
 }

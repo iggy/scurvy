@@ -14,7 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Super Linter
-        uses: github/super-linter@v2.0.0
+        # This makes it pull from github's docker repo according to a note in the README.md
+        uses: docker://github/super-linter:v2.1.0
 
   build:
     runs-on: ubuntu-latest
@@ -28,7 +29,7 @@ jobs:
           - syncd
     steps:
       - name: Checkout master
-        uses: actions/checkout@master
+        uses: actions/checkout@v2
       - name: Build and publish ${{ matrix.target }} image
         uses: ilteoood/docker_buildx@1.0.4
         env:

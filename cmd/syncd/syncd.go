@@ -54,7 +54,7 @@ func main() {
 	// server and sends a slack if it hasn't heard from a host in a while
 	ticker := time.NewTicker(time.Second * 30)
 	go func() {
-		log.Printf("Pinging nats with hostname: %s (%s)\n", hostname, t)
+		log.Printf("Pinging nats with hostname: %s\n", hostname)
 		for range ticker.C {
 			msgs.SendNatsPing(hostname)
 		}

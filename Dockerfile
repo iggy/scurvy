@@ -104,7 +104,7 @@ ENTRYPOINT ["/input-webhook"]
 
 # This builds the syncd image from build binaries stage output
 # syncd runs a shell script to do the actual downloading, so can't use `scratch`
-FROM alpine:3.12.1 as syncd
+FROM alpine:3.12.2 as syncd
 ARG TARGETOS
 ARG TARGETARCH
 COPY --from=build /ddist/${TARGETOS}_${TARGETARCH}_syncd /syncd

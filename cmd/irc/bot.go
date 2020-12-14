@@ -12,7 +12,6 @@ import (
 
 	irc "github.com/fluffle/goirc/client"
 	"github.com/iggy/scurvy/pkg/config"
-	"github.com/iggy/scurvy/pkg/errors"
 	"github.com/iggy/scurvy/pkg/msgs"
 	"github.com/nats-io/nats.go"
 	"github.com/spf13/viper"
@@ -125,9 +124,13 @@ func main() {
 	log.Println("Setting up NATS connection")
 	nc, err := nats.Connect(config.GetNatsConnString(),
 		nats.UserInfo(viper.GetString("mq.user"), viper.GetString("mq.password")))
-	errors.CheckErr(err)
+	if err != nil {
+		log.Panicf("Failed to nats.Connect: %#v", err)
+	}
 	natschan, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	errors.CheckErr(err)
+	if err != nil {
+		log.Panicf("Failed to switch to encoded connection: %#v", err)
+	}
 
 	subj, i := "scurvy.notify.*", 0
 	log.Println("Setting up subscription")
@@ -149,8 +152,10 @@ func main() {
 	}
 	natschan.Flush()
 
-	lerr := nc.LastError()
-	errors.CheckErr(lerr)
+	err = nc.LastError()
+	if err != nil {
+		log.Panicf("Failed nc.LastError: %#v", err)
+	}
 
 	log.Println("Setting up reallyquit loop")
 	for !reallyquit {

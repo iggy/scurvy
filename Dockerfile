@@ -1,101 +1,39 @@
-# we set this here because buildx normally sets it for us, but
-# CircleCI doesn't support a new enough docker, so we have to
-# pass this arg manually when in CI
-# ARG BUILDPLATFORM
+FROM golang:alpine3.12 as build
 
-# Run tests stage (we only run this on the BUILDPLATFORM)
-FROM --platform=$BUILDPLATFORM golang:alpine3.12 as test
+WORKDIR /src
 
-WORKDIR /go/src/github.com/iggy/scurvy/
+COPY go.* /src/
 
-RUN apk add --no-cache git upx gcc libc-dev
+RUN go mod download
 
-RUN go get -u golang.org/x/lint/golint \
-	honnef.co/go/tools/cmd/staticcheck \
-	github.com/fzipp/gocyclo
+COPY . /src/
 
-# Use add here to invalidate the cache
-ADD . /go/src/github.com/iggy/scurvy/
+RUN mkdir bins/
 
-# install deps the easy way
-RUN go get github.com/iggy/scurvy/...
+RUN go build -tags netgo -ldflags='-extldflags="-static" -s -w' -o bins/ ./...
 
-# These are all separate so failures are a little easier to track
-RUN gofmt -l -s -w ./cmd ./pkg
-# RUN test -z $(gofmt -s -l $GO_FILES)
-# go test -race basically doesn't work with alpine/musl
-# RUN go test -v -race ./...
-RUN go vet ./...
-RUN staticcheck ./...
-# RUN gocyclo -over 19 $GO_FILES
-RUN golint -set_exit_status $(go list ./...)
-
-
-
-# Build binaries stage (we only run this on the BUILDPLATFORM)
-FROM --platform=$BUILDPLATFORM golang:alpine3.12 as build
-
-WORKDIR /go/src/github.com/iggy/scurvy/
-
-RUN apk add --no-cache git upx gcc libc-dev
-
-RUN go get -u github.com/mitchellh/gox \
-	github.com/tcnksm/ghr
-
-# Use add here to invalidate the cache
-ADD . /go/src/github.com/iggy/scurvy/
-
-# install deps the easy way
-RUN go get github.com/iggy/scurvy/...
-
-# build the binaries
-# release binaries (these may link against libc)
-RUN gox \
-				-arch="amd64" \
-				-os="linux" \
-				-output="dist/{{.OS}}_{{.Arch}}_{{.Dir}}" \
-				-ldflags='-extldflags "-static" -s -w' \
-				-tags='netgo' ./...
-# docker binaries (these are prohibited to link against libc since they go in
-# a scratch image)
-# They are also compressed (upx) to make the docker images as small as possible
-RUN mkdir -p /ddist/etc
-RUN CGO_ENABLED=0 gox \
-				-arch="amd64 arm64 arm" \
-				-os="linux" \
-				-output="/ddist/{{.OS}}_{{.Arch}}_{{.Dir}}" \
-				-ldflags='-extldflags "-static" -s -w' \
-				-tags='netgo' ./...
-RUN upx /ddist/linux*
-
-
+# TODO add upx back
 
 # This builds the irc image from build binaries stage output
 FROM scratch as irc
-ARG TARGETOS
-ARG TARGETARCH
-COPY --from=build /ddist/${TARGETOS}_${TARGETARCH}_irc /ircbot
-COPY --from=build /ddist/etc /
+COPY --from=build /src/bins/irc /ircbot
+COPY --from=build /etc/ssl /etc
 ENTRYPOINT ["/ircbot"]
 
 
 
 # This builds the notifyd image from build binaries stage output
 FROM scratch as notifyd
-ARG TARGETOS
-ARG TARGETARCH
-COPY --from=build /ddist/${TARGETOS}_${TARGETARCH}_notifyd /notifyd
-COPY --from=build /ddist/etc /
+COPY --from=build /src/bins/notifyd /notifyd
+COPY --from=build /etc/ssl /etc/
 ENTRYPOINT ["/notifyd"]
 
 
 
 # This builds the input-webhook image from build binaries stage output
 FROM scratch as input-webhook
-ARG TARGETOS
-ARG TARGETARCH
-COPY --from=build /ddist/${TARGETOS}_${TARGETARCH}_input-webhook /input-webhook
-COPY --from=build /ddist/etc /
+COPY --from=build /src/bins/input-webhook /input-webhook
+COPY --from=build /etc/ssl /etc/
 # just the one port that accepts webhook connections from sabnzbd/sickrage/CouchPotato
 EXPOSE 38475
 ENTRYPOINT ["/input-webhook"]
@@ -105,10 +43,8 @@ ENTRYPOINT ["/input-webhook"]
 # This builds the syncd image from build binaries stage output
 # syncd runs a shell script to do the actual downloading, so can't use `scratch`
 FROM alpine:3.12.2 as syncd
-ARG TARGETOS
-ARG TARGETARCH
-COPY --from=build /ddist/${TARGETOS}_${TARGETARCH}_syncd /syncd
-COPY --from=build /ddist/etc /
+COPY --from=build /src/bins/syncd /syncd
+COPY --from=build /etc/ssl /etc/
 # COPY --from=build /go/src/github.com/iggy/scurvy/cmd/syncd/sync_files.sh /
 
 # Need the ca-certificates for the NATS TLS cert and using rsync for the

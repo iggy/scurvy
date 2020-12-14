@@ -10,7 +10,6 @@ import (
 
 	"net/http"
 
-	"github.com/iggy/scurvy/pkg/errors"
 	"github.com/iggy/scurvy/pkg/msgs"
 )
 
@@ -19,10 +18,14 @@ import (
 // movies
 func couchpotatoHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	errors.CheckErr(err)
+	if err != nil {
+		log.Println("failed to read request body")
+	}
 
-	cerr := r.Body.Close()
-	errors.CheckErr(cerr)
+	err = r.Body.Close()
+	if err != nil {
+		log.Println("failed to close request body")
+	}
 
 	log.Println(body)
 }
@@ -33,9 +36,14 @@ func sabnzbdHandler(w http.ResponseWriter, r *http.Request) {
 	// body: {"message": "Too little diskspace forcing PAUSE", "version": "1.0", "type": "info", "title": "SABnzbd: Warning"}
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	errors.CheckErr(err)
-	cerr := r.Body.Close()
-	errors.CheckErr(cerr)
+	if err != nil {
+		log.Printf("failed to read request body: %#v\n", err)
+	}
+
+	err = r.Body.Close()
+	if err != nil {
+		log.Printf("failed to close request body: %#v\n", err)
+	}
 
 	log.Printf("body: %s\n", body)
 
@@ -43,8 +51,10 @@ func sabnzbdHandler(w http.ResponseWriter, r *http.Request) {
 	if jerr := json.Unmarshal(body, &jreq); jerr != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
-		eerr := json.NewEncoder(w).Encode(jerr)
-		errors.CheckErr(eerr)
+		err = json.NewEncoder(w).Encode(jerr)
+		if err != nil {
+			log.Printf("failed to encode json error: %#v\n", err)
+		}
 	}
 	log.Printf("SAB: message: %s\n\ttitle: %s\n\ttype: %s\n\tversion: %s\n",
 		jreq.Message, jreq.Title, jreq.Type, jreq.Version)
@@ -68,10 +78,15 @@ func sabnzbdHandler(w http.ResponseWriter, r *http.Request) {
 // This is slightly complicated by the fact that sickbeard doesn't have a generic notification
 // function, so we have to pretend to be XBMC's JSONRPC interface
 func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
-	body, rerr := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	errors.CheckErr(rerr)
-	cerr := r.Body.Close()
-	errors.CheckErr(cerr)
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		log.Printf("failed to read request body: %#v\n", err)
+	}
+
+	err = r.Body.Close()
+	if err != nil {
+		log.Printf("failed to close request body: %#v\n", err)
+	}
 
 	log.Printf("SICK: %q\n", bytes.NewBuffer(body).String())
 
@@ -81,8 +96,10 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Failed to unmarshall json body: \n%v\n%v", jerr, body)
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
-		eerr := json.NewEncoder(w).Encode(jerr)
-		errors.CheckErr(eerr)
+		err := json.NewEncoder(w).Encode(jerr)
+		if err != nil {
+			log.Printf("failed to encode json error: %#v\n", err)
+		}
 	}
 	log.Printf("SICK: method = \"%s\" (%T)\n", jreq.Method, jreq.JSONRPC)
 
@@ -98,7 +115,9 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		jret.Result.Version.Patch = 0
 
 		jstr, err := json.Marshal(jret)
-		errors.CheckErr(err)
+		if err != nil {
+			log.Printf("failed to marshal json: %#v\n", err)
+		}
 		c, err := w.Write(jstr)
 		if err != nil {
 			log.Println("Failed to write json response", jstr, err, c)
@@ -112,8 +131,10 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		if jgsnerr := json.Unmarshal(body, &jreqp); jgsnerr != nil {
 			w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 			w.WriteHeader(422) // unprocessable entity
-			eerr := json.NewEncoder(w).Encode(jgsnerr)
-			errors.CheckErr(eerr)
+			err := json.NewEncoder(w).Encode(jgsnerr)
+			if err != nil {
+				log.Printf("GUI.ShowNotification: failed to encode json error: %#v\n", err)
+			}
 		}
 
 		// reply to the request
@@ -122,7 +143,9 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		jret.JSONRPC = jreq.JSONRPC
 		jret.Result = "OK"
 		jstr, err := json.Marshal(jret)
-		errors.CheckErr(err)
+		if err != nil {
+			log.Printf("failed to marshal json: %#v\n", err)
+		}
 		c, err := w.Write(jstr)
 		if err != nil {
 			log.Println("Failed to write json response", jstr, err, c)
@@ -139,7 +162,9 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 		jret.JSONRPC = jreq.JSONRPC
 		jret.Result = "Error"
 		jstr, err := json.Marshal(jret)
-		errors.CheckErr(err)
+		if err != nil {
+			log.Printf("failed to marshal json: %#v\n", err)
+		}
 		c, err := w.Write(jstr)
 		if err != nil {
 			log.Println("Failed to write json response", jstr, err, c)
@@ -149,9 +174,13 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 
 func defaultHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
-	errors.CheckErr(err)
-	cerr := r.Body.Close()
-	errors.CheckErr(cerr)
+	if err != nil {
+		log.Printf("failed to read body: %#v\n", err)
+	}
+	err = r.Body.Close()
+	if err != nil {
+		log.Printf("failed to close body: %#v\n", err)
+	}
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
 	c, err := io.WriteString(w, "Running")

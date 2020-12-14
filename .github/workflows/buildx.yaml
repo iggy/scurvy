@@ -21,7 +21,26 @@ jobs:
           # and run it separately below
           VALIDATE_GO: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
+
+  golangci-lint:
+    name: golangci-lint on push
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+      - name: Get dependencies
+        run: |
+          go get -v -t -d ./...
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v2
+        with:
+          # Required: the version of golangci-lint is required and must be
+          # specified without patch version: we always use the latest patch
+          # version.
+          version: v1.33      
 
   build:
     runs-on: ubuntu-latest

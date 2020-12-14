@@ -42,7 +42,7 @@ func sabnzbdHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = r.Body.Close()
 	if err != nil {
-		log.Println("failed to close request body: %#v\n", err)
+		log.Printf("failed to close request body: %#v\n", err)
 	}
 
 	log.Printf("body: %s\n", body)
@@ -85,7 +85,7 @@ func sickbeardHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = r.Body.Close()
 	if err != nil {
-		log.Println("failed to close request body: %#v\n", err)
+		log.Printf("failed to close request body: %#v\n", err)
 	}
 
 	log.Printf("SICK: %q\n", bytes.NewBuffer(body).String())

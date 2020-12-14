@@ -12,7 +12,6 @@ import (
 
 	irc "github.com/fluffle/goirc/client"
 	"github.com/iggy/scurvy/pkg/config"
-	"github.com/iggy/scurvy/pkg/errors"
 	"github.com/iggy/scurvy/pkg/msgs"
 	"github.com/nats-io/nats.go"
 	"github.com/spf13/viper"
@@ -153,7 +152,7 @@ func main() {
 	}
 	natschan.Flush()
 
-	lerr := nc.LastError()
+	err = nc.LastError()
 	if err != nil {
 		log.Panicf("Failed nc.LastError: %#v", err)
 	}

@@ -20,6 +20,8 @@ jobs:
           # super-linter runs golangci-lint in a stupid way, just disable it
           # and run it separately below
           VALIDATE_GO: false
+          # the Dockerfile linters are all stupid or broken
+          VALIDATE_DOCKERFILE: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   golangci-lint:

@@ -52,7 +52,6 @@ jobs:
     steps:
       - name: Checkout master
         uses: actions/checkout@v2
-      - run: docker build --target build --build-arg BUILDPLATFORM=amd64 .
       - name: Build and publish ${{ matrix.target }} image
         uses: ilteoood/docker_buildx@1.1.0
         env:

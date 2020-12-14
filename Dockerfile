@@ -2,8 +2,6 @@ FROM golang:alpine3.12 as build
 
 WORKDIR /src
 
-RUN apk add --no-cache upx
-
 COPY go.* /src/
 
 RUN go mod download
@@ -14,7 +12,7 @@ RUN mkdir bins/
 
 RUN go build -tags netgo -ldflags='-extldflags="-static" -s -w' -o bins/ ./...
 
-RUN upx bins/*
+# TODO add upx back
 
 # This builds the irc image from build binaries stage output
 FROM scratch as irc

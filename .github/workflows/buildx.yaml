@@ -22,6 +22,7 @@ jobs:
           VALIDATE_GO: false
           # the Dockerfile linters are all stupid or broken
           VALIDATE_DOCKERFILE: false
+          VALIDATE_DOCKERFILE_HADOLINT: false
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   golangci-lint:
@@ -61,5 +62,5 @@ jobs:
           publish: ${{ env.PUBLISH }}
           imageName: notiggy/scurvy-${{ matrix.target }}
           target: ${{ matrix.target }}
-          dockerHubUser: ${{ secrets.DH_USER }}
-          dockerHubPassword: ${{ secrets.DH_PASS }}
+          dockerUser: ${{ secrets.DH_USER }}
+          dockerPassword: ${{ secrets.DH_PASS }}

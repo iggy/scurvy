@@ -50,7 +50,7 @@ jobs:
       - name: Checkout master
         uses: actions/checkout@v2
       - name: Build and publish ${{ matrix.target }} image
-        uses: ilteoood/docker_buildx@1.0.4
+        uses: ilteoood/docker_buildx@1.1.0
         env:
           PUBLISH: ${{ github.ref == 'refs/heads/master' }}
           PUBLISH2: ${{ contains(github.ref, 'master') }}

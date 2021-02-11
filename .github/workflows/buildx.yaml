@@ -20,6 +20,9 @@ jobs:
           # super-linter runs golangci-lint in a stupid way, just disable it
           # and run it separately below
           VALIDATE_GO: false
+          # jscpd is stupid on go files... yes go error handling is boilerplate-y... none of us
+          # love it, but there's not much we can do
+          VALIDATE_JSCPD: false
           # the Dockerfile linters are all stupid or broken
           VALIDATE_DOCKERFILE: false
           VALIDATE_DOCKERFILE_HADOLINT: false

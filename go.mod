@@ -3,7 +3,7 @@ module github.com/iggy/scurvy
 go 1.13
 
 require (
-	github.com/fluffle/goirc v1.1.0
+	github.com/fluffle/goirc v1.1.1
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/magiconair/properties v1.8.5 // indirect

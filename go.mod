@@ -10,7 +10,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/nats-io/nats-server/v2 v2.1.7 // indirect
-	github.com/nats-io/nats.go v1.10.0
+	github.com/nats-io/nats.go v1.11.0
 	github.com/pelletier/go-toml v1.8.1 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.3.1 // indirect

@@ -5,9 +5,14 @@ go 1.13
 require (
 	github.com/fluffle/goirc v1.1.1
 	github.com/gorilla/mux v1.8.0
+	github.com/klauspost/compress v1.13.1 // indirect
+	github.com/minio/highwayhash v1.0.2 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
-	github.com/nats-io/nats-server/v2 v2.1.7 // indirect
-	github.com/nats-io/nats.go v1.11.0
+	github.com/nats-io/nats-server/v2 v2.3.2 // indirect
+	github.com/nats-io/nats.go v1.11.1-0.20210623165838-4b75fc59ae30
 	github.com/spf13/cobra v1.2.1
 	github.com/spf13/viper v1.8.1
+	golang.org/x/crypto v0.0.0-20210711020723-a769d52b0f97 // indirect
+	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
+	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
 )

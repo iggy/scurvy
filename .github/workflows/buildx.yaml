@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Run GitHub's Super Linter
     steps:
-      - uses: actions/checkout@v2.3.5
+      - uses: actions/checkout@v2.4.0
       - name: Super Linter
         # This makes it pull from github's docker repo according to a note in the README.md
         uses: docker://github/super-linter:v3
@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v2.3.5
+      - uses: actions/checkout@v2.4.0
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v2.5.2
         with:
@@ -54,7 +54,7 @@ jobs:
           - syncd
     steps:
       - name: Checkout master
-        uses: actions/checkout@v2.3.5
+        uses: actions/checkout@v2.4.0
       - name: Build and publish ${{ matrix.target }} image
         uses: ilteoood/docker_buildx@1.1.0
         env:

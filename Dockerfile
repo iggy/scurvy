@@ -42,7 +42,7 @@ ENTRYPOINT ["/input-webhook"]
 
 # This builds the syncd image from build binaries stage output
 # syncd runs a shell script to do the actual downloading, so can't use `scratch`
-FROM alpine:3.16.2 as syncd
+FROM alpine:3.17.1 as syncd
 COPY --from=build /src/bins/syncd /syncd
 COPY --from=build /etc/ssl /etc/
 # COPY --from=build /go/src/github.com/iggy/scurvy/cmd/syncd/sync_files.sh /

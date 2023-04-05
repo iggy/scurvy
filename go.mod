@@ -8,6 +8,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/nats-io/nats-server/v2 v2.7.4 // indirect
 	github.com/nats-io/nats.go v1.24.0
-	github.com/spf13/cobra v1.6.1
+	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.15.0
 )

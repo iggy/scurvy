@@ -1,6 +1,6 @@
 module github.com/iggy/scurvy
 
-go 1.13
+go 1.20
 
 require (
 	github.com/fluffle/goirc v1.1.1

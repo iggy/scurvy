@@ -19,7 +19,7 @@ func ReadConfig() {
 		log.Panicf("fatal error config file: %s", err)
 	}
 
-	// build the slack webhook address here and shove it back into viper for safe keeping
+	// assemble the slack webhook address here and shove it back into viper for safe keeping
 	viper.Set("webhook_address",
 		fmt.Sprintf("https://hooks.slack.com/services/%s", viper.GetString("slack.webhook_key")))
 }
